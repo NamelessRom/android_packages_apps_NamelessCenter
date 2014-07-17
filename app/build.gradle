@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 319
+    compileSdkVersion 19
     buildToolsVersion "20.0.0"
 
     defaultConfig {
         applicationId "org.namelessrom.center"
         minSdkVersion 19
-        targetSdkVersion 319
+        targetSdkVersion 19
     }
     signingConfigs {
         release {
