@@ -6,13 +6,21 @@ android {
 
     defaultConfig {
         applicationId "org.namelessrom.center"
-        minSdkVersion 19
+        minSdkVersion 17
         targetSdkVersion 19
 
-        ndk {
-            moduleName "libopendelta"
+        //ndk {
+        //    moduleName "libopendelta"
+        //}
+    }
+
+    sourceSets {
+        main {
+            // do not build jni in gradle as i dont need it for debugging :P
+            jni.srcDirs = ['donotbuildme']
         }
     }
+
     signingConfigs {
         release {
             def Properties localProps = new Properties()
@@ -50,5 +58,6 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v13:20.+'
+    compile 'com.jakewharton:butterknife:5.+'
     compile 'com.koushikdutta.ion:ion:1.+'
 }
