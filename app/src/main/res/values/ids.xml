@@ -15,19 +15,20 @@
    *    You should have received a copy of the GNU General Public License
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity$PlaceholderFragment">
-
-    <TextView
-        android:text="@string/app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-</RelativeLayout>
+<resources>
+    <!-- General -->
+    <item name="fragment_container" type="id" />
+    <!-- Settings -->
+    <item name="build_info" type="id" />
+    <item name="nameless_provider" type="id" />
+    <item name="update_settings" type="id" />
+    <!-- Reside menu -->
+    <item name="iv_background" type="id" />
+    <item name="iv_shadow" type="id" />
+    <item name="sv_left_menu" type="id" />
+    <item name="layout_left_menu" type="id" />
+    <item name="sv_right_menu" type="id" />
+    <item name="layout_right_menu" type="id" />
+    <item name="iv_icon" type="id" />
+    <item name="tv_title" type="id" />
+</resources>
