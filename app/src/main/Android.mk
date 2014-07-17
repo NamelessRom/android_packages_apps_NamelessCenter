@@ -17,6 +17,11 @@ LOCAL_PACKAGE_NAME := NamelessCenter
 LOCAL_CERTIFICATE := platform
 LOCAL_PRIVILEGED_MODULE := true
 
+LOCAL_SDK_VERSION := 19
+
+LOCAL_JNI_SHARED_LIBRARIES := libopendelta
+LOCAL_REQUIRED_MODULES     := libopendelta
+
 include $(BUILD_PACKAGE)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
