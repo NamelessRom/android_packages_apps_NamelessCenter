@@ -8,6 +8,10 @@ android {
         applicationId "org.namelessrom.center"
         minSdkVersion 19
         targetSdkVersion 19
+
+        ndk {
+            moduleName "libopendelta"
+        }
     }
     signingConfigs {
         release {
@@ -45,7 +49,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v13:20.+'
     compile 'com.koushikdutta.ion:ion:1.+'
 }
