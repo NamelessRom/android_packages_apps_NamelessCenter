@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   *    Copyright (C) 2014 Alexander "Evisceration" Martinz
+   *
+   *    This program is free software: you can redistribute it and/or modify
+   *    it under the terms of the GNU General Public License as published by
+   *    the Free Software Foundation, either version 3 of the License, or
+   *    (at your option) any later version.
+   *
+   *    This program is distributed in the hope that it will be useful,
+   *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+   *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   *    GNU General Public License for more details.
+   *
+   *    You should have received a copy of the GNU General Public License
+   *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Update Settings -->
+    <header
+        android:id="@id/update_settings"
+        android:title="@string/rom_updates"
+        android:summary="@string/rom_updates_summary"
+        android:fragment="org.namelessrom.center.fragments.preferences.RomUpdatePreferenceFragment" />
+
+    <!-- Extras Category -->
+    <header android:title="@string/extras" />
+
+    <!-- Nameless Provider -->
+    <header
+        android:id="@id/nameless_provider"
+        android:title="@string/nameless_provider" />
+
+    <!-- Information -->
+    <header android:title="@string/information" />
+
+    <!-- Build Information -->
+    <header
+        android:id="@id/build_info"
+        android:title="@string/build_version"
+        android:summary="---">
+        <extra
+            android:name="informal"
+            android:value="true" />
+    </header>
+
+</preference-headers>
