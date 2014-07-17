@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Nameless Center</string>
+    <string name="home">Home</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
