@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Update Settings -->
+    <header
+        android:id="@id/update_settings"
+        android:title="@string/rom_updates"
+        android:summary="@string/rom_updates_summary"
+        android:fragment="org.namelessrom.center.fragments.preferences.RomUpdatePreferenceFragment" />
+
+    <!-- Extras Category -->
+    <header android:title="@string/extras" />
+
+    <!-- Nameless Provider -->
+    <header
+        android:id="@id/nameless_provider"
+        android:title="@string/nameless_provider" />
+
+    <!-- Information -->
+    <header android:title="@string/information" />
+
+    <!-- Build Information -->
+    <header
+        android:id="@id/build_info"
+        android:title="@string/build_version"
+        android:summary="---" />
+
+</preference-headers>

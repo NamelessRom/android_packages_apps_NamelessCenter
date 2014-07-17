@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- General -->
+    <item name="fragment_container" type="id" />
+    <!-- Settings -->
+    <item name="build_info" type="id" />
+    <item name="nameless_provider" type="id" />
+    <item name="update_settings" type="id" />
+    <!-- Reside menu -->
+    <item name="iv_background" type="id" />
+    <item name="iv_shadow" type="id" />
+    <item name="sv_left_menu" type="id" />
+    <item name="layout_left_menu" type="id" />
+    <item name="sv_right_menu" type="id" />
+    <item name="layout_right_menu" type="id" />
+    <item name="iv_icon" type="id" />
+    <item name="tv_title" type="id" />
+</resources>
