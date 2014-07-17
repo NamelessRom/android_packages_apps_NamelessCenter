@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingTop="30dp">
+
+    <org.namelessrom.center.widgets.CircleImageView
+        android:id="@id/iv_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="centerCrop"
+        app:border="true"
+        app:border_color="@android:color/white"
+        app:border_width="1dp"
+        app:shadow="true" />
+
+    <TextView
+        android:id="@id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:singleLine="true" />
+
+</LinearLayout>

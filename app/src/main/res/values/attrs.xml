@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CircleImageView">
+        <!-- borders around the image-->
+        <attr name="border" format="boolean" />
+        <attr name="border_color" format="color" />
+        <attr name="border_width" format="dimension" />
+        <!-- Highlighting on touch events -->
+        <attr name="selector" format="boolean" />
+        <attr name="selector_color" format="color" />
+        <attr name="selector_stroke_color" format="color" />
+        <attr name="selector_stroke_width" format="dimension" />
+        <!-- Shadow -->
+        <attr name="shadow" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomCircleImageViewTheme">
+        <attr name="circleImageViewStyle" format="reference" />
+    </declare-styleable>
+
+</resources>

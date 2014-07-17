@@ -1,63 +1,181 @@
 package org.namelessrom.center;
 
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 
+import com.special.ResideMenu.ResideMenu;
+import com.special.ResideMenu.ResideMenuItem;
 
+import org.namelessrom.center.utils.DrawableHelper;
 
-public class MainActivity extends Activity {
+import java.util.ArrayList;
+
+public class MainActivity extends Activity implements View.OnClickListener {
+
+    private ResideMenu mResideMenu;
+
+    private static final Object[] MENU_LEFT_ICONS = new Object[]{
+            DrawableHelper.getSvgDrawable(R.raw.svg_home),
+            DrawableHelper.getSvgDrawable(R.raw.svg_updates),
+            DrawableHelper.getSvgDrawable(R.raw.svg_preferences),
+    };
+
+    private static final int[] MENU_LEFT_TITLES = new int[]{
+            R.string.home,
+            R.string.updates,
+            R.string.preferences
+    };
+
+    private static final int[] MENU_LEFT_IDS = new int[]{
+            Constants.MENU_ID_HOME,
+            Constants.MENU_ID_UPDATES,
+            Constants.MENU_ID_PREFERENCES
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
+
+        setupActionBar();
+
+        mResideMenu = setupMenu();
+
+        loadFragment(new PlaceholderFragment());
     }
 
+    private void setupActionBar() {
+        final ActionBar actionBar = getActionBar();
+        if (actionBar == null) return;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    private ResideMenu setupMenu() {
+        final ResideMenu resideMenu = new ResideMenu(this);
+
+        resideMenu.setBackground(R.drawable.main_background);
+        resideMenu.attachToActivity(this);
+        resideMenu.setMenuListener(mMenuListener);
+        resideMenu.setScaleValue(0.6f);
+
+        // Disable the right menu
+        resideMenu.setSwipeDirectionDisable(ResideMenu.DIRECTION_RIGHT);
+
+        resideMenu.setMenuItems(buildMenuLeft(), ResideMenu.DIRECTION_LEFT);
+
+        return resideMenu;
+    }
+
+    private ArrayList<ResideMenuItem> buildMenuLeft() {
+        final ArrayList<ResideMenuItem> menuItems = new ArrayList<ResideMenuItem>(1);
+
+        ResideMenuItem item;
+        for (int i = 0; i < MENU_LEFT_ICONS.length; i++) {
+            item = new ResideMenuItem(this, MENU_LEFT_ICONS[i], MENU_LEFT_TITLES[i]);
+            item.setMenuId(MENU_LEFT_IDS[i]);
+            item.setOnClickListener(this);
+            menuItems.add(item);
+        }
+
+        return menuItems;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+    public void onClick(final View v) {
+        if (!(v instanceof ResideMenuItem)) return;
+
+        final Fragment fragment;
+        final int id = ((ResideMenuItem) v).getMenuId();
+        switch (id) {
+            default:
+            case Constants.MENU_ID_HOME:
+                fragment = new PlaceholderFragment();
+                break;
         }
+
+        loadFragment(fragment);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        final int id = item.getItemId();
+
+        switch (id) {
+            default:
+            case android.R.id.home:
+                if (!mResideMenu.isOpened()) mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
+                break;
+        }
+
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        if (mResideMenu != null && mResideMenu.isOpened()) {
+            mResideMenu.closeMenu();
+        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
+        return mResideMenu.dispatchTouchEvent(ev);
+    }
+
+    private void loadFragment(final Fragment fragment) {
+        mResideMenu.clearIgnoredViewList();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
+        if (mResideMenu.isOpened()) mResideMenu.closeMenu();
+    }
+
+    private final ResideMenu.OnMenuListener mMenuListener = new ResideMenu.OnMenuListener() {
+        @Override
+        public void openMenu() {
+
+        }
+
+        @Override
+        public void closeMenu() {
+
+        }
+    };
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public class PlaceholderFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
+        public PlaceholderFragment() { }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            rootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
+                }
+            });
             return rootView;
         }
     }
