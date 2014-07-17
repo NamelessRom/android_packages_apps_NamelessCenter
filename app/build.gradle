@@ -9,10 +9,17 @@ android {
         minSdkVersion 19
         targetSdkVersion 19
 
-        ndk {
-            moduleName "libopendelta"
+        //ndk {
+        //    moduleName "libopendelta"
+        //}
+    }
+
+    sourceSets {
+        main {
+            jni.srcDirs = ['donotbuildme']
         }
     }
+
     signingConfigs {
         release {
             def Properties localProps = new Properties()
