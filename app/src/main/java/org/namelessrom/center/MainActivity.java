@@ -33,11 +33,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
 
 import org.namelessrom.center.fragments.updates.RomUpdateFragment;
+import org.namelessrom.center.interfaces.OnBackPressedListener;
 import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
 import org.namelessrom.center.utils.AnimationHelper;
 import org.namelessrom.center.utils.DrawableHelper;
@@ -47,7 +49,13 @@ import java.util.ArrayList;
 public class MainActivity extends Activity implements OnFragmentLoadedListener,
         View.OnClickListener {
 
+    private static final String ACTION_UPDATES = "org.namelessrom.center.UPDATES";
+
     private ResideMenu mResideMenu;
+
+    private Fragment mCurrentFragment;
+    private Toast    mToast;
+    private long     backPressed;
 
     private static final Object[] MENU_LEFT_ICONS = new Object[]{
             DrawableHelper.getSvgDrawable(R.raw.svg_home),
@@ -75,7 +83,22 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
 
         mResideMenu = setupMenu();
 
-        loadFragment(new PlaceholderFragment());
+        // Set the initial fragment
+        mCurrentFragment = processIntent(getIntent());
+        loadFragment();
+    }
+
+    private Fragment processIntent(final Intent intent) {
+        if (intent == null || intent.getAction() == null) return new PlaceholderFragment();
+
+        final String action = intent.getAction();
+        if (action.isEmpty()) return new PlaceholderFragment();
+
+        if (ACTION_UPDATES.equals(action)) {
+            return new RomUpdateFragment();
+        }
+
+        return new PlaceholderFragment();
     }
 
     private void setupActionBar() {
@@ -127,23 +150,23 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
 
             @Override
             public void onAnimationEnd(final Animator animation) {
-                Fragment fragment = null;
                 switch (id) {
                     default:
                     case Constants.MENU_ID_HOME:
-                        fragment = new PlaceholderFragment();
+                        mCurrentFragment = new PlaceholderFragment();
                         break;
                     case Constants.MENU_ID_UPDATES:
-                        fragment = new RomUpdateFragment();
+                        mCurrentFragment = new RomUpdateFragment();
                         break;
                     case Constants.MENU_ID_PREFERENCES:
                         final Intent i = new Intent(MainActivity.this, SettingsActivity.class);
                         startActivity(i);
                         overridePendingTransition(R.anim.enter_left, R.anim.enter_right);
-                        break;
+                        return;
                 }
 
-                if (fragment != null) loadFragment(fragment);
+                // replace the content with mCurrentFragment
+                loadFragment();
             }
 
             @Override public void onAnimationCancel(final Animator animation) { }
@@ -171,8 +194,19 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
             mResideMenu.closeMenu();
         } else if (getFragmentManager().getBackStackEntryCount() > 0) {
             getFragmentManager().popBackStack();
+        } else if (mCurrentFragment != null && mCurrentFragment instanceof OnBackPressedListener
+                && ((OnBackPressedListener) mCurrentFragment).onBackPressed()) {
+            Logger.v(this, "onBackPressed()");
         } else {
-            super.onBackPressed();
+            if ((backPressed + 2000) > System.currentTimeMillis()) {
+                if (mToast != null) { mToast.cancel(); }
+                finish();
+            } else {
+                mToast = Toast.makeText(getBaseContext(), getString(R.string.action_press_again),
+                        Toast.LENGTH_SHORT);
+                mToast.show();
+            }
+            backPressed = System.currentTimeMillis();
         }
     }
 
@@ -180,11 +214,11 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
         return mResideMenu.dispatchTouchEvent(ev);
     }
 
-    private void loadFragment(final Fragment fragment) {
+    private void loadFragment() {
         mResideMenu.clearIgnoredViewList();
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
+                .replace(R.id.fragment_container, mCurrentFragment)
                 .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
     }

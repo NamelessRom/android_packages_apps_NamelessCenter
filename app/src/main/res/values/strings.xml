@@ -25,4 +25,6 @@
     <string name="information">Information</string>
     <string name="rom_updates">Rom updates</string>
     <string name="rom_updates_summary">Configure preferences about rom updates</string>
+
+    <string name="action_press_again">Press once again to exit!</string>
 </resources>

@@ -30,7 +30,10 @@ import android.widget.TextView;
 
 import org.namelessrom.center.R;
 import org.namelessrom.center.items.UpdateInfo;
+import org.namelessrom.center.utils.DebugHelper;
 import org.namelessrom.center.utils.DrawableHelper;
+
+import java.security.SecureRandom;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardExpand;
@@ -48,6 +51,7 @@ public class RomUpdateCard extends Card {
     private final UpdateInfo mUpdateInfo;
 
     private ProgressBar mDownloadProgress;
+    private TextView    mStateTextView;
 
     public RomUpdateCard(final Context context, final UpdateInfo info) {
         this(context, R.layout.card_rom_update_inner_content, info);
@@ -97,9 +101,17 @@ public class RomUpdateCard extends Card {
     public void setupInnerView(final View view) {
         final TextView titleTextView = findById(view, R.id.rom_update_inner_title);
         final TextView statusTextView = findById(view, R.id.rom_update_inner_status);
+
+        mStateTextView = findById(view, R.id.rom_update_inner_state);
         mDownloadProgress = findById(view, R.id.rom_update_inner_progress);
-        //TODO: setup progress
-        mDownloadProgress.setVisibility(View.INVISIBLE);
+
+        //TODO: setup progress, state etc
+        if (DebugHelper.getEnabled()) {
+            final SecureRandom secureRandom = new SecureRandom();
+            mDownloadProgress.setProgress(secureRandom.nextInt(100));
+        } else {
+            mDownloadProgress.setVisibility(View.INVISIBLE);
+        }
 
         final String title = mUpdateInfo.getReadableName();
         final String status = mUpdateInfo.getMd5();

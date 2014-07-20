@@ -47,6 +47,16 @@
         android:id="@+id/rom_update_inner_progress"
         style="@style/rom_update_inner_progress"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        tools:text="DOWNLOADED"
+        android:id="@+id/rom_update_inner_state"
+        style="@style/rom_update_inner_status_text"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:progress="60" />
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:layout_gravity="right|bottom"
+        android:gravity="right|bottom" />
 </LinearLayout>
