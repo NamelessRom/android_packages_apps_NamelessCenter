@@ -50,7 +50,7 @@ import java.util.ArrayList;
 public class MainActivity extends Activity implements OnFragmentLoadedListener,
         View.OnClickListener {
 
-    private static final String ACTION_UPDATES = "org.namelessrom.center.UPDATES";
+    public static final String ACTION_UPDATES = "org.namelessrom.center.UPDATES";
 
     private ResideMenu mResideMenu;
 

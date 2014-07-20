@@ -47,22 +47,4 @@ public class DebugHelper {
                 "00cb8a1cb8e90df20945250a0d749233", /* no URL */ "", "20140101");
     }
 
-    public static void addDummyCards(final Context context, final CardArrayAdapter adapter,
-            final Card.OnSwipeListener swipeListener) {
-        final ArrayList<Card> cards = new ArrayList<Card>();
-        for (int i = 0; i < 10; i++) {
-            if (i == 0) {
-                final SimpleCard card = new SimpleCard(context);
-                card.setTitle(String.format("Hey, i am card #%s", i));
-                card.setBody(String.format("SystemClock.elapsedRealtime(): %s",
-                        SystemClock.elapsedRealtime()));
-                card.setOnSwipeListener(swipeListener);
-                adapter.insert(card, 0);
-            } else {
-                cards.add(new RomUpdateCard(context, DebugHelper.getDummyUpdateInfo()));
-            }
-        }
-        adapter.addAll(cards);
-    }
-
 }

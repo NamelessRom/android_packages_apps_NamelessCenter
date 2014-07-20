@@ -18,4 +18,8 @@
 <resources>
     <string name="app_name" translatable="false">Nameless Center</string>
     <string name="nameless_provider" translatable="false">Nameless Provider</string>
+    <string name="nightly" translatable="false">Nightly</string>
+    <string name="weekly" translatable="false">Weekly</string>
+    <string name="recovery_type_cwm" translatable="false">ClockWorkMod</string>
+    <string name="recovery_type_open" translatable="false">OpenRecovery</string>
 </resources>

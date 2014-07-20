@@ -98,6 +98,8 @@ public class UpdateInfo implements Parcelable, Serializable {
         return mName;
     }
 
+    public String getZipName() { return String.format("%s.zip", mName); }
+
     public String getChannel() { return mChannel; }
 
     public String getChannelShort() { return mChannelShort; }
@@ -198,4 +200,5 @@ public class UpdateInfo implements Parcelable, Serializable {
         mTimestamp = in.readString();
         mIsDownloading = in.readString().equals("1");
     }
+
 }

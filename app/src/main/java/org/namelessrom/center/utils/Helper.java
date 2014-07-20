@@ -19,39 +19,111 @@
 
 package org.namelessrom.center.utils;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import org.namelessrom.center.AppInstance;
+import org.namelessrom.center.Constants;
+import org.namelessrom.center.Logger;
+import org.namelessrom.center.services.UpdateCheckService;
+
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.FileReader;
 
 /**
  * A helper class which helps me helping you
  */
 public class Helper {
 
-    public static boolean isNameless() { return existsInBuildProp("ro.nameless.version"); }
+    private static final int FILE_BUFFER = 512;
 
-    public static boolean isNamelessDebug() { return existsInBuildProp("ro.nameless.debug=1"); }
+    public static boolean isNameless() {
+        return !readBuildProp("ro.nameless.version").equals("NULL");
+    }
 
-    public static boolean existsInBuildProp(final String filter) {
-        final File f = new File("/system/build.prop");
+    public static boolean isNamelessDebug() {
+        return !readBuildProp("ro.nameless.debug").equals("NULL");
+    }
+
+    public static boolean isOnline() {
+        final ConnectivityManager cm = (ConnectivityManager)
+                AppInstance.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
+    }
+
+    public static boolean isMetered() {
+        final ConnectivityManager cm = (ConnectivityManager)
+                AppInstance.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.isActiveNetworkMetered();
+    }
+
+    public static String readBuildProp(final String prop) {
+        FileReader fileReader = null;
         BufferedReader bufferedReader = null;
-        if (f.exists() && f.canRead()) {
-            try {
-                bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
-                String s;
-                while ((s = bufferedReader.readLine()) != null) {
-                    if (s.contains(filter)) return true;
-                }
-            } catch (Exception whoops) {
-                return false;
-            } finally {
-                try {
-                    if (bufferedReader != null) bufferedReader.close();
-                } catch (Exception ignored) { }
+
+        try {
+            fileReader = new FileReader("/system/build.prop");
+            bufferedReader = new BufferedReader(fileReader, FILE_BUFFER);
+            String tmp;
+            while ((tmp = bufferedReader.readLine()) != null) {
+                if (tmp.contains(prop)) return tmp.replace(prop + "=", "");
             }
+        } catch (final Exception e) {
+            Logger.e(Helper.class, "Error: " + e.getMessage());
+        } finally {
+            try {
+                if (bufferedReader != null) bufferedReader.close();
+                if (fileReader != null) fileReader.close();
+            } catch (Exception ignored) { }
         }
-        return false;
+
+        return "NULL";
+    }
+
+    public static int getBuildDate() { return parseDate(Helper.readBuildProp("ro.nameless.date")); }
+
+    public static int parseDate(final String timeStampString) {
+        try {
+            return Integer.parseInt(timeStampString);
+        } catch (Exception exc) {
+            Logger.e(Helper.class, String.format("parseDate: %s", exc.getMessage()));
+            return 20140101;
+        }
+    }
+
+    public static String getUpdateFile(final String filename) {
+        return (Constants.UPDATE_FOLDER_FULL + File.separator + filename);
+    }
+
+    public static boolean isUpdateDownloaded(final String filename) {
+        return new File(getUpdateFile(filename)).exists();
+    }
+
+    public static void scheduleUpdateService(final int updateFreq) {
+        // Load the required settings from preferences
+        final long lastCheck = Long.parseLong(
+                PreferenceHelper.getString(Constants.LAST_UPDATE_CHECK_PREF, "0"));
+
+        // Get the intent ready
+        final Intent i = new Intent(AppInstance.applicationContext, UpdateCheckService.class);
+        i.setAction(UpdateCheckService.ACTION_CHECK);
+        final PendingIntent pi = PendingIntent.getService(AppInstance.applicationContext, 0, i,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Clear any old alarms and schedule the new alarm
+        final AlarmManager am = (AlarmManager) AppInstance.applicationContext
+                .getSystemService(Context.ALARM_SERVICE);
+        am.cancel(pi);
+
+        if (Constants.UPDATE_FREQ_NONE != updateFreq) {
+            am.setRepeating(AlarmManager.RTC_WAKEUP, lastCheck + updateFreq, updateFreq, pi);
+        }
     }
 
 }

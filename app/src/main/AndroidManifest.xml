@@ -64,6 +64,15 @@
             android:name=".SettingsActivity"
             android:label="@string/preferences"
             android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <receiver android:name=".receivers.UpdateCheckReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".services.UpdateCheckService" />
     </application>
 
 </manifest>
