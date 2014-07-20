@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
 
+import org.namelessrom.center.database.DatabaseHandler;
 import org.namelessrom.center.fragments.updates.RomUpdateFragment;
 import org.namelessrom.center.interfaces.OnBackPressedListener;
 import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
@@ -86,6 +87,11 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
         // Set the initial fragment
         mCurrentFragment = processIntent(getIntent());
         loadFragment();
+    }
+
+    @Override protected void onDestroy() {
+        DatabaseHandler.tearDown();
+        super.onDestroy();
     }
 
     private Fragment processIntent(final Intent intent) {
