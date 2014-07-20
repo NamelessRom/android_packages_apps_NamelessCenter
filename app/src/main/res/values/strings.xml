@@ -14,12 +14,12 @@
    *
    *    You should have received a copy of the GNU General Public License
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
+-->
 <resources>
+
     <string name="home">Home</string>
     <string name="updates">Updates</string>
     <string name="preferences">Preferences</string>
-
     <string name="build_version">Build version</string>
     <string name="version">Version: %s</string>
     <string name="extras">Extras</string>
@@ -27,4 +27,6 @@
     <string name="nameless_provider">Nameless Provider</string>
     <string name="rom_updates">Rom updates</string>
     <string name="rom_updates_summary">Configure preferences about rom updates</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

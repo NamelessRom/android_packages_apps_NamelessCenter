@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/card"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:orientation="horizontal"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <Button
+        tools:text="Install"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:id="@+id/rom_update_expand_button_install"
+        android:textSize="20sp"
+        android:layout_weight="1" />
+
+    <View style="@style/ButtonBarDivider" />
+
+    <Button
+        tools:text="Delete"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:id="@+id/rom_update_expand_button_delete"
+        android:textSize="20sp"
+        android:layout_weight="1" />
+</LinearLayout>

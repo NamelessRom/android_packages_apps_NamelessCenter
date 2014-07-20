@@ -31,7 +31,22 @@ import org.namelessrom.center.AppInstance;
  */
 public class AnimationHelper {
 
-    private static final int DEFAULT_DURATION = 250;
+    public static final int DEFAULT_DURATION = 250;
+
+    public static ObjectAnimator alpha(final View v, final float from, final float to) {
+        return alpha(v, from, to, DEFAULT_DURATION);
+    }
+
+    public static ObjectAnimator alpha(final View v, final float from, final float to,
+            final int duration) {
+        final ObjectAnimator animator = ObjectAnimator.ofFloat(v, "alpha", from, to);
+        animator.setDuration(duration);
+        return animator;
+    }
+
+    public static ObjectAnimator scaleX(final View v, final float from, final float to) {
+        return scaleX(v, from, to, DEFAULT_DURATION);
+    }
 
     public static ObjectAnimator scaleX(final View v, final float from, final float to,
             final int duration) {
