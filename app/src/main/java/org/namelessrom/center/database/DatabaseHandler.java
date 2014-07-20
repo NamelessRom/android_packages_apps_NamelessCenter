@@ -30,7 +30,7 @@ import java.io.File;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int    DATABASE_VERSION = 1;
+    private static final int    DATABASE_VERSION = 2;
     private static final String DATABASE_NAME    = "NamelessCenter.db";
 
     public static final String DB_DOWNGRADE = ".dbdowngrade";
@@ -52,16 +52,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public static synchronized void tearDown() {
         Logger.i(DatabaseHandler.class, "tearDown()");
+        closeDatabase();
+        sDatabaseHandler = null;
+    }
+
+    public static synchronized SQLiteDatabase getDatabase() {
+        if (sDb == null) sDb = getInstance().getWritableDatabase();
+        return sDb;
+    }
+
+    public static synchronized void closeDatabase() {
         if (sDb != null) {
             sDb.close();
             sDb = null;
         }
-        sDatabaseHandler = null;
     }
 
     @Override
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL(NamelessTable.createTable());
+        db.execSQL(UpdateTable.createTable());
     }
 
     @Override
@@ -75,6 +85,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.execSQL(NamelessTable.dropTable());
             db.execSQL(NamelessTable.createTable());
             currentVersion = 1;
+        }
+
+        if (currentVersion < 2) {
+            db.execSQL(UpdateTable.dropTable());
+            db.execSQL(UpdateTable.createTable());
+            currentVersion = 2;
         }
 
         if (currentVersion != DATABASE_VERSION) {
@@ -118,8 +134,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    public boolean insertOrUpdate(final String name, final String value,
-            final String tableName) {
+    public boolean insertOrUpdate(final String name, final String value, final String tableName) {
         if (sDb == null) return false;
 
         final ContentValues values = new ContentValues();
