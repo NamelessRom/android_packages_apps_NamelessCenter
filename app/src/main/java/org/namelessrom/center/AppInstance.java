@@ -23,6 +23,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
+import org.namelessrom.center.utils.DebugHelper;
 import org.namelessrom.center.utils.Helper;
 
 /**
@@ -37,6 +38,9 @@ public class AppInstance extends Application {
         super.onCreate();
 
         applicationContext = getApplicationContext();
+        // TODO: remove before release
+        DebugHelper.setEnabled(true);
+        // TODO: preference
         Logger.setEnabled(Helper.isNamelessDebug());
     }
 
