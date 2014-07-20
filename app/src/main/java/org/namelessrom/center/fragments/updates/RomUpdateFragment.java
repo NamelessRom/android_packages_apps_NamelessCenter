@@ -30,21 +30,29 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Subscribe;
+
 import org.namelessrom.center.AppInstance;
+import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
 import org.namelessrom.center.cards.RomUpdateCard;
 import org.namelessrom.center.cards.SimpleCard;
+import org.namelessrom.center.events.DownloadProgressEvent;
 import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
 import org.namelessrom.center.items.UpdateInfo;
 import org.namelessrom.center.services.UpdateCheckService;
 import org.namelessrom.center.utils.AnimationHelper;
+import org.namelessrom.center.utils.BusProvider;
 import org.namelessrom.center.utils.DebugHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
@@ -64,12 +72,15 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
     @Override public void onResume() {
         super.onResume();
-        AppInstance.applicationContext.registerReceiver(updateCheckReceiver,
-                new IntentFilter(UpdateCheckService.ACTION_CHECK_FINISHED));
+        BusProvider.getBus().register(this);
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(UpdateCheckService.ACTION_CHECK_FINISHED);
+        AppInstance.applicationContext.registerReceiver(updateCheckReceiver, intentFilter);
     }
 
     @Override public void onPause() {
         super.onPause();
+        BusProvider.getBus().unregister(this);
         try {
             AppInstance.applicationContext.unregisterReceiver(updateCheckReceiver);
         } catch (final Exception ignored) { }
@@ -122,6 +133,9 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
     }
 
     private void addCards(final ArrayList<Card> result) {
+        // remove all previous cards
+        mCardArrayAdapter.clear();
+
         // add our "master card"
         final SimpleCard card = new SimpleCard(getActivity());
         card.setTitle(String.format("Hey, i am card #0"));
@@ -132,6 +146,15 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
         // add our updates, if they are not null
         if (result != null && result.size() != 0) mCardArrayAdapter.addAll(result);
+
+        // and update it
+        updateCards();
+    }
+
+    private void updateCards() {
+        Logger.v(this, "updateCards()");
+        mCardArrayAdapter.notifyDataSetChanged();
+        mCardListView.invalidate();
     }
 
     private final class UpdateCardTask extends AsyncTask<Void, Void, ArrayList<Card>> {
@@ -168,16 +191,50 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
     private final BroadcastReceiver updateCheckReceiver = new BroadcastReceiver() {
         @Override public void onReceive(final Context context, final Intent intent) {
-            if (intent == null || !intent.getBooleanExtra("success", false)) return;
-            final ArrayList<UpdateInfo> updates = intent.getParcelableArrayListExtra("updates");
-            new UpdateCardTask(updates).execute();
+            if (intent == null || TextUtils.isEmpty(intent.getAction())) return;
+            final String action = intent.getAction();
+
+            if (UpdateCheckService.ACTION_CHECK_FINISHED.equals(action)) {
+                if (!intent.getBooleanExtra("success", false)) return;
+                final ArrayList<UpdateInfo> updates = intent.getParcelableArrayListExtra("updates");
+                new UpdateCardTask(updates).execute();
+            }
         }
     };
 
+    @Subscribe public void onDownloadProgressEvent(final DownloadProgressEvent event) {
+        if (event == null) return;
+
+        mCardArrayAdapter.getDownloading().remove(event.getId());
+        mCardArrayAdapter.getDownloading().put(event.getId(), event.getPercentage());
+
+        updateCards();
+    }
+
     private class RomUpdateCardArrayAdapter extends CardArrayAdapter {
+        private final HashMap<String, Integer> mDownloading = new HashMap<String, Integer>();
+
         public RomUpdateCardArrayAdapter(final Context context, final ArrayList<Card> cards) {
             super(context, cards);
             // TODO: load cards with already downloaded updates (hint: database + file check)
         }
+
+        @Override public View getView(int position, View convertView, ViewGroup parent) {
+            if (mDownloading.size() > 0 && getItem(position) instanceof RomUpdateCard) {
+                final RomUpdateCard card = (RomUpdateCard) getItem(position);
+                for (final Map.Entry<String, Integer> entry : mDownloading.entrySet()) {
+                    if (TextUtils.equals(entry.getKey(), card.getId())) {
+                        card.setDownloading(entry.getValue() != 101);
+                        if (card.getDownloadProgress() != null) {
+                            card.getDownloadProgress().setProgress(entry.getValue());
+                        }
+                    }
+                }
+            }
+
+            return super.getView(position, convertView, parent);
+        }
+
+        public HashMap<String, Integer> getDownloading() { return mDownloading; }
     }
 }
