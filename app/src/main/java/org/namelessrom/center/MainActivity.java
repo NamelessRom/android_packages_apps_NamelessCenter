@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
 
+import org.namelessrom.center.fragments.updates.RomUpdateFragment;
 import org.namelessrom.center.utils.AnimationHelper;
 import org.namelessrom.center.utils.DrawableHelper;
 
@@ -141,8 +142,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         switch (id) {
             default:
             case Constants.MENU_ID_HOME:
-            case Constants.MENU_ID_UPDATES:
                 fragment = new PlaceholderFragment();
+                break;
+            case Constants.MENU_ID_UPDATES:
+                fragment = new RomUpdateFragment();
                 break;
             case Constants.MENU_ID_PREFERENCES:
                 // handled by animation listener

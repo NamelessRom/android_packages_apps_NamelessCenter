@@ -37,6 +37,7 @@ public class AppInstance extends Application {
         super.onCreate();
 
         applicationContext = getApplicationContext();
+        // Todo: preference
         Logger.setEnabled(Helper.isNamelessDebug());
     }
 
