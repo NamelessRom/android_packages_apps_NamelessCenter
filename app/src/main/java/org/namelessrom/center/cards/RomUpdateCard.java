@@ -19,8 +19,13 @@
 
 package org.namelessrom.center.cards;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +33,16 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.namelessrom.center.AppInstance;
+import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
 import org.namelessrom.center.items.UpdateInfo;
+import org.namelessrom.center.receivers.UpdateCheckReceiver;
+import org.namelessrom.center.services.DownloadService;
 import org.namelessrom.center.utils.DebugHelper;
 import org.namelessrom.center.utils.DrawableHelper;
+import org.namelessrom.center.utils.MD5;
+import org.namelessrom.center.utils.UpdateHelper;
 
 import java.security.SecureRandom;
 
@@ -48,7 +59,7 @@ import static butterknife.ButterKnife.findById;
  */
 public class RomUpdateCard extends Card {
 
-    private final UpdateInfo mUpdateInfo;
+    private UpdateInfo mUpdateInfo;
 
     private ProgressBar mDownloadProgress;
     private TextView    mStateTextView;
@@ -73,8 +84,8 @@ public class RomUpdateCard extends Card {
         addCardIcon();
 
         // Setup actions which are available when expanding (pressing on) the card
-        final RomUpdateCardExpand cardExpand = new RomUpdateCardExpand(getContext());
-        // TODO: setup stuffs
+        final RomUpdateCardExpand cardExpand =
+                new RomUpdateCardExpand(getContext(), mUpdateInfo, this);
         addCardExpand(cardExpand);
 
         // Do not allow to swipe it away... yet
@@ -105,10 +116,11 @@ public class RomUpdateCard extends Card {
         mStateTextView = findById(view, R.id.rom_update_inner_state);
         mDownloadProgress = findById(view, R.id.rom_update_inner_progress);
 
-        //TODO: setup progress, state etc
         if (DebugHelper.getEnabled()) {
             final SecureRandom secureRandom = new SecureRandom();
             mDownloadProgress.setProgress(secureRandom.nextInt(100));
+        } else if (mUpdateInfo.isDownloading()) {
+            mDownloadProgress.setVisibility(View.VISIBLE);
         } else {
             mDownloadProgress.setVisibility(View.INVISIBLE);
         }
@@ -128,6 +140,18 @@ public class RomUpdateCard extends Card {
         final ViewToClickToExpand viewToClickToExpand =
                 ViewToClickToExpand.builder().setupView(getCardView());
         setViewToClickToExpand(viewToClickToExpand);
+    }
+
+    public void setState(final String state) {
+        if (mStateTextView != null) mStateTextView.setText(state);
+    }
+
+    public ProgressBar getDownloadProgress() { return mDownloadProgress; }
+
+    public UpdateInfo getUpdateInfo() { return mUpdateInfo; }
+
+    public void setDownloading(final boolean downloading) {
+        this.mUpdateInfo = mUpdateInfo.setDownloading(downloading);
     }
 
     private static class RomUpdateThumbnail extends CardThumbnail {
@@ -169,23 +193,142 @@ public class RomUpdateCard extends Card {
         @Override public String getTag() { return updateInfo.getTimestamp(); }
     }
 
-    //TODO: setup actions based on what we can do :derp:
     private static class RomUpdateCardExpand extends CardExpand {
+        private final RomUpdateCard updateCard;
+        private final UpdateInfo    updateInfo;
 
-        public RomUpdateCardExpand(final Context context) {
+        public RomUpdateCardExpand(final Context context, final UpdateInfo info,
+                final RomUpdateCard card) {
             super(context, R.layout.card_rom_update_expand_inner_content);
+            this.updateCard = card;
+            this.updateInfo = info;
         }
 
         @Override
-        public void setupInnerViewElements(ViewGroup parent, View view) {
+        public void setupInnerViewElements(final ViewGroup parent, final View view) {
             if (view == null) return;
 
-            final Button install = findById(view, R.id.rom_update_expand_button_install);
-            install.setText("Install");
+            final Button left = findById(view, R.id.rom_update_expand_button_left);
+            final Button right = findById(view, R.id.rom_update_expand_button_right);
 
-            final Button delete = findById(view, R.id.rom_update_expand_button_delete);
-            delete.setText("Delete");
+            if (updateInfo.isDownloading()) {
+                left.setVisibility(View.INVISIBLE);
+                right.setVisibility(View.VISIBLE);
+                right.setText(android.R.string.cancel);
+                if (updateCard.getDownloadProgress() != null) {
+                    updateCard.getDownloadProgress().setVisibility(View.VISIBLE);
+                }
+                updateCard.setState(AppInstance.getStr(R.string.downloading));
+            } else if (updateInfo.isDownloaded()) {
+                left.setVisibility(View.VISIBLE);
+                left.setText(R.string.delete_update);
+                right.setVisibility(View.VISIBLE);
+                right.setText(R.string.install);
+                if (updateCard.getDownloadProgress() != null) {
+                    updateCard.getDownloadProgress().setVisibility(View.INVISIBLE);
+                }
+                updateCard.setState(AppInstance.getStr(R.string.downloaded));
+            } else {
+                left.setVisibility(View.INVISIBLE);
+                right.setVisibility(View.VISIBLE);
+                right.setText(R.string.download);
+                if (updateCard.getDownloadProgress() != null) {
+                    updateCard.getDownloadProgress().setVisibility(View.INVISIBLE);
+                }
+                updateCard.setState("");
+            }
+
+            left.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    UpdateHelper.getDeleteDialog(getContext(), updateInfo).show();
+                }
+            });
+
+            right.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    if (updateInfo.isDownloading()) {
+                        DownloadService.cancelDownload(updateInfo.getTimestamp());
+                    } else if (updateInfo.isDownloaded()) {
+                        new InstallTask(getContext(), updateInfo).execute();
+                    } else {
+                        DownloadService.start(updateInfo);
+                    }
+                }
+            });
         }
 
+    }
+
+    private static class InstallTask extends AsyncTask<Void, Void, Boolean> {
+        private final Context        context;
+        private final UpdateInfo     updateInfo;
+        private final ProgressDialog progressDialog;
+
+        public InstallTask(final Context context, final UpdateInfo updateInfo) {
+            this.context = context;
+            this.updateInfo = updateInfo;
+            this.progressDialog = new ProgressDialog(this.context);
+        }
+
+        @Override protected void onPreExecute() {
+            progressDialog.setTitle(R.string.checking_md5);
+            progressDialog.setMessage(AppInstance.getStr(R.string.please_wait));
+            progressDialog.setIndeterminate(true);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override protected Boolean doInBackground(Void... params) {
+            return MD5.checkMD5(updateInfo.getMd5(), updateInfo.getPath());
+        }
+
+        @Override protected void onPostExecute(Boolean result) {
+            progressDialog.dismiss();
+            final int title;
+            final String message;
+
+            // setup title and message depending on the md5sum check result
+            if (result) {
+                Logger.v(this, "md5 sum does match");
+                title = R.string.reboot_and_install;
+                message = AppInstance.getStr(
+                        R.string.download_install_notice, updateInfo.getReadableName());
+            } else {
+                Logger.e(this, "md5 sum does not match!");
+                title = R.string.warning;
+                message = AppInstance.getStr(
+                        R.string.md5sum_warning, updateInfo.getReadableName());
+            }
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(title);
+            builder.setMessage(message);
+            builder.setNegativeButton(
+                    android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    }
+            );
+
+            // only show "reboot and install" if the md5sum matches
+            if (result) {
+                builder.setPositiveButton(R.string.reboot_and_install,
+                        new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface dialogInterface, int i) {
+                                final Intent installIntent = new Intent(
+                                        AppInstance.applicationContext, UpdateCheckReceiver.class);
+                                installIntent.setAction(UpdateCheckReceiver.ACTION_INSTALL_UPDATE);
+                                installIntent.putExtra(UpdateCheckReceiver.EXTRA_FILE,
+                                        updateInfo.getZipName());
+                                AppInstance.applicationContext.sendBroadcast(installIntent);
+                                dialogInterface.dismiss();
+                            }
+                        }
+                );
+            }
+
+            builder.show();
+        }
     }
 }

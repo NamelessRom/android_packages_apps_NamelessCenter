@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.koushikdutta.async.future.FutureCallback;
@@ -37,8 +38,10 @@ import org.namelessrom.center.Logger;
 import org.namelessrom.center.MainActivity;
 import org.namelessrom.center.R;
 import org.namelessrom.center.items.UpdateInfo;
+import org.namelessrom.center.receivers.UpdateCheckReceiver;
 import org.namelessrom.center.utils.Helper;
 import org.namelessrom.center.utils.PreferenceHelper;
+import org.namelessrom.center.utils.UpdateHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,14 +53,12 @@ public class UpdateCheckService extends Service {
 
     // request actions
     public static final String ACTION_CHECK        = "org.namelessrom.center.action.CHECK";
-    public static final String ACTION_CANCEL_CHECK = "org.namelessrom.center.action.CANCEL_CHECK";
     public static final String ACTION_CHECK_UI     = "org.namelessrom.center.action.CHECK_UI";
+    public static final String ACTION_CANCEL_CHECK = "org.namelessrom.center.action.CANCEL_CHECK";
 
     // broadcast actions
     public static final String ACTION_CHECK_FINISHED =
             "org.namelessrom.center.action.UPDATE_CHECK_FINISHED";
-    // extra for ACTION_CHECK_FINISHED: total amount of found updates
-    public static final String EXTRA_UPDATE_COUNT    = "update_count";
 
     // max. number of updates listed in the expanded notification
     private static final int EXPANDED_NOTIF_UPDATE_COUNT = 4;
@@ -131,8 +132,7 @@ public class UpdateCheckService extends Service {
                 final String md5sum = info.getMd5();
                 final String urlFile = info.getUrl();
                 final String timeStamp = info.getTimestamp();
-                if (currentDate <= Helper.parseDate(timeStamp)
-                        || Helper.isUpdateDownloaded(info.getZipName())) {
+                if (currentDate <= Helper.parseDate(timeStamp) || info.isDownloaded()) {
                     updates.add(new UpdateInfo(channel, name, md5sum, urlFile, timeStamp));
                 }
             }
@@ -181,7 +181,7 @@ public class UpdateCheckService extends Service {
                         .setContentIntent(contentIntent)
                         .setAutoCancel(true);
 
-                Notification.InboxStyle inbox = new Notification.InboxStyle(builder)
+                final Notification.InboxStyle inbox = new Notification.InboxStyle(builder)
                         .setBigContentTitle(text);
                 int added = 0;
 
@@ -201,23 +201,22 @@ public class UpdateCheckService extends Service {
                 builder.setNumber(realUpdateCount);
 
                 if (realUpdateCount == 1) {
-                    /*final UpdateInfo updateInfo = updates.get(0);
+                    final UpdateInfo updateInfo = updates.get(0);
 
-                    if (!new File(Constants.UPDATE_FOLDER_FULL + File.separator
-                            + updateInfo.getZipName()).exists()) {
-                        i = new Intent(UpdateCheckService.this, DownloadReceiver.class);
-                        i.setAction(DownloadReceiver.ACTION_START_DOWNLOAD);
-                        i.putExtra(DownloadReceiver.EXTRA_UPDATE_INFO, (Parcelable) updateInfo);
+                    if (!UpdateHelper.isUpdateDownloaded(updateInfo.getZipName())) {
+                        i = new Intent(UpdateCheckService.this, UpdateCheckReceiver.class);
+                        i.setAction(UpdateCheckReceiver.ACTION_DOWNLOAD_UPDATE);
+                        i.putExtra(UpdateCheckReceiver.EXTRA_UPDATE_INFO, (Parcelable) updateInfo);
                         final PendingIntent pendingIntent = PendingIntent.getBroadcast(
                                 UpdateCheckService.this, 0, i,
                                 PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT);
                         builder.addAction(R.drawable.ic_stat_notify_download,
                                 res.getString(R.string.download), pendingIntent);
-                    }*/
+                    }
                 }
 
                 // Trigger the notification
-                NotificationManager nm =
+                final NotificationManager nm =
                         (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 nm.notify(R.string.new_updates_found_title, builder.build());
             }

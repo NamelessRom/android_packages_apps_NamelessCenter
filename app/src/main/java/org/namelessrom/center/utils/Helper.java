@@ -20,7 +20,9 @@
 package org.namelessrom.center.utils;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.StatusBarManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -97,12 +99,25 @@ public class Helper {
         }
     }
 
-    public static String getUpdateFile(final String filename) {
-        return (Constants.UPDATE_FOLDER_FULL + File.separator + filename);
-    }
-
-    public static boolean isUpdateDownloaded(final String filename) {
-        return new File(getUpdateFile(filename)).exists();
+    public static void createDirectories() {
+        File f = new File(Constants.UPDATE_FOLDER_FULL);
+        if (!f.exists()) {
+            Logger.v(Helper.class,
+                    "Created: " + f.getAbsolutePath() + ": " + (f.mkdirs() ? "true" : "false"));
+        }
+        f = new File(Constants.UPDATE_FOLDER_ADDITIONAL);
+        if (!f.exists()) {
+            Logger.v(Helper.class,
+                    "Created: " + f.getAbsolutePath() + ": " + (f.mkdirs() ? "true" : "false"));
+        }
+        f = new File(Constants.UPDATE_FOLDER_CHANGELOG);
+        if (!f.exists()) {
+            Logger.v(Helper.class,
+                    "Created: " + f.getAbsolutePath() + ": " + (f.mkdirs() ? "true" : "false"));
+        } else {
+            Logger.v(Helper.class, "Cleaning changelogs.");
+            //cleanChangelogs(f);
+        }
     }
 
     public static void scheduleUpdateService(final int updateFreq) {
@@ -123,6 +138,21 @@ public class Helper {
 
         if (Constants.UPDATE_FREQ_NONE != updateFreq) {
             am.setRepeating(AlarmManager.RTC_WAKEUP, lastCheck + updateFreq, updateFreq, pi);
+        }
+    }
+
+    public static void cancelNotification(final int notificationId) {
+        if (notificationId == -1000) return;
+        final NotificationManager nm = (NotificationManager) AppInstance.applicationContext
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancel(notificationId);
+    }
+
+    public static void collapseStatusbar() {
+        if (isNameless()) {
+            final StatusBarManager sb = (StatusBarManager)
+                    AppInstance.applicationContext.getSystemService(Context.STATUS_BAR_SERVICE);
+            sb.collapsePanels();
         }
     }
 

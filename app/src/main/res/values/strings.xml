@@ -15,7 +15,7 @@
    *    You should have received a copy of the GNU General Public License
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res/android">
     <string name="home">Home</string>
     <string name="updates">Updates</string>
     <string name="preferences">Preferences</string>
@@ -24,34 +24,33 @@
     <string name="extras">Extras</string>
     <string name="information">Information</string>
     <string name="general">General</string>
+    <string name="unknown">Unknown</string>
 
     <string name="action_press_again">Press once again to exit!</string>
 
+    <string name="install">Install</string>
     <string name="download">Download</string>
-    <string name="unknown">Unknown</string>
+    <string name="delete_update">Delete update</string>
+    <string name="delete_update_message">Do you really want to delete "%s"?</string>
 
-    <!-- Settings strings -->
-    <string name="update_check_title">Update check interval</string>
-    <string name="check_manual">Manual</string>
-    <string name="check_on_app_start">On app start</string>
-    <string name="check_on_boot">On every boot</string>
-    <string name="check_twice_daily">Twice daily</string>
-    <string name="check_daily">Daily</string>
-    <string name="check_weekly">Weekly</string>
-    <string name="check_bi_weekly">Bi-weekly</string>
-    <string name="check_monthly">Monthly</string>
+    <string name="downloaded">Downloaded</string>
+    <string name="downloading">Downloading</string>
+    <!--string name="installed">Installed</string-->
 
-    <string name="update_metered_title">Allow metered connection</string>
-    <string name="update_metered_summary">Set whether this download may proceed over a metered connection</string>
-    <string name="update_metered_skip_warn_title">Skip metered warning</string>
-    <string name="update_roaming_title">Allow roaming</string>
-    <string name="update_roaming_summary">Set whether this download may proceed over roaming</string>
+    <string name="checking_md5">Checking MD5 sum…</string>
+    <string name="downloading_update">Downloading update…</string>
+    <string name="download_in_progress">Download in progress…</string>
+    <string name="please_wait">Please wait until the operation finishes…</string>
 
-    <string name="channel_title">Update channel</string>
-    <string name="all">All</string>
+    <string name="warning">Warning!</string>
+    <string name="md5sum_warning">The MD5 checksum of "%s" does not match the downloaded file!\n\nPlease ensure the file is not corrupt! If you continue to see these errors, you may try to flash the file manually, on your own risk!</string>
 
-    <string name="recovery_type_title">Recovery script type</string>
-    <string name="recovery_type_both">Both</string>
+    <string name="download_success">Update downloaded successfully</string>
+    <string name="reboot_and_install">Reboot and install</string>
+    <string name="download_install_notice">The update <xliff:g id="filename">%s</xliff:g> was successfully downloaded. When touching \'Reboot and install\', the device will restart itself to install the update.\n\nNote: A compatible Recovery is required for the installation to work automatically.</string>
+    <string name="download_failure">Update download was unsuccessful</string>
+    <string name="unable_to_download_file">Unable to download the rom update file</string>
+    <string name="unable_to_reboot_toast">Unable to reboot into recovery</string>
 
     <!-- Update checking -->
     <string name="update_check_failed">The update check failed. Please check your internet connection and try again later.</string>

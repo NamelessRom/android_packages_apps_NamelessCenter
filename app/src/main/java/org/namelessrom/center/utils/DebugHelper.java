@@ -19,17 +19,7 @@
 
 package org.namelessrom.center.utils;
 
-import android.content.Context;
-import android.os.SystemClock;
-
-import org.namelessrom.center.cards.RomUpdateCard;
-import org.namelessrom.center.cards.SimpleCard;
 import org.namelessrom.center.items.UpdateInfo;
-
-import java.util.ArrayList;
-
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 
 /**
  * Helper for debugging

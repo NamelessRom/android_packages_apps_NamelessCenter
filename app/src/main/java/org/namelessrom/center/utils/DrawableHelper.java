@@ -27,7 +27,6 @@ import android.graphics.drawable.Drawable;
 import com.larvalabs.svgandroid.SVGBuilder;
 
 import org.namelessrom.center.AppInstance;
-import org.namelessrom.center.R;
 
 /**
  * Makes our life easier at working with {@link android.graphics.drawable.Drawable}s
