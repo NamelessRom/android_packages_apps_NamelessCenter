@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   *    Copyright (C) 2014 Alexander "Evisceration" Martinz
+   *
+   *    This program is free software: you can redistribute it and/or modify
+   *    it under the terms of the GNU General Public License as published by
+   *    the Free Software Foundation, either version 3 of the License, or
+   *    (at your option) any later version.
+   *
+   *    This program is distributed in the hope that it will be useful,
+   *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+   *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   *    GNU General Public License for more details.
+   *
+   *    You should have received a copy of the GNU General Public License
+   *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:gravity="top"
+    style="@style/card"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        tools:text="nameless-4.4.4-20140101-p970-NIGHTLY"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rom_update_inner_title"
+        style="@style/card.header_simple_title"
+        android:textSize="20sp"
+        android:ellipsize="marquee"
+        android:singleLine="true" />
+
+    <TextView
+        tools:text="00cb8a1cb8e90df20945250a0d749233"
+        android:id="@+id/rom_update_inner_status"
+        style="@style/rom_update_inner_status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:singleLine="true" />
+
+    <ProgressBar
+        tools:progress="60"
+        android:id="@+id/rom_update_inner_progress"
+        style="@style/rom_update_inner_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="60" />
+</LinearLayout>

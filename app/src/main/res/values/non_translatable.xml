@@ -17,4 +17,5 @@
   -->
 <resources>
     <string name="app_name" translatable="false">Nameless Center</string>
+    <string name="nameless_provider" translatable="false">Nameless Provider</string>
 </resources>
