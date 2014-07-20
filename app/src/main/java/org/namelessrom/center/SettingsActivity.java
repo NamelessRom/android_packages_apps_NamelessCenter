@@ -51,11 +51,30 @@ public class SettingsActivity extends PreferenceActivity {
 
     private List<Header> mHeaders;
 
+    // needs to be static to survive
+    private static boolean isBackPressed = false;
+
     @Override public boolean isValidFragment(final String fragmentName) {
         for (final String ENTRY_FRAGMENT : ENTRY_FRAGMENTS) {
             if (ENTRY_FRAGMENT.equals(fragmentName)) return true;
         }
         return false;
+    }
+
+    @Override public void onBackPressed() {
+        isBackPressed = true;
+        super.onBackPressed();
+    }
+
+    @Override protected void onStart() {
+        super.onStart();
+        Logger.i(this, String.format("isBackPressed: %s", isBackPressed));
+        if (isBackPressed) {
+            overridePendingTransition(R.anim.exit_right, R.anim.exit_left);
+            isBackPressed = false;
+        } else {
+            overridePendingTransition(R.anim.enter_left, R.anim.enter_right);
+        }
     }
 
     @Override protected void onPause() {
@@ -64,6 +83,12 @@ public class SettingsActivity extends PreferenceActivity {
             finish();
             overridePendingTransition(R.anim.exit_right, R.anim.exit_left);
         }
+    }
+
+    @Override protected void onDestroy() {
+        // reset on destoy to not launch the next time with the wrong transitions
+        isBackPressed = false;
+        super.onDestroy();
     }
 
     @Override public void onBuildHeaders(final List<Header> headers) {
