@@ -23,6 +23,7 @@
     <item name="rom_updates_cards_list" type="id" />
     <!-- Settings -->
     <item name="build_info" type="id" />
+    <item name="general_settings" type="id" />
     <item name="nameless_provider" type="id" />
     <item name="update_settings" type="id" />
     <!-- Reside menu -->

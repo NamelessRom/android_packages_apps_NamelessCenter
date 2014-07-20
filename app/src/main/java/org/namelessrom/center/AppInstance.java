@@ -24,7 +24,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 
 import org.namelessrom.center.utils.DebugHelper;
-import org.namelessrom.center.utils.Helper;
+import org.namelessrom.center.utils.PreferenceHelper;
+
+import java.io.File;
 
 /**
  * AppInstance aka Application
@@ -38,10 +40,11 @@ public class AppInstance extends Application {
         super.onCreate();
 
         applicationContext = getApplicationContext();
+
         // TODO: remove before release
         DebugHelper.setEnabled(true);
-        // TODO: preference
-        Logger.setEnabled(Helper.isNamelessDebug());
+
+        Logger.setEnabled(PreferenceHelper.getBoolean(PreferenceHelper.DEBUG, false));
     }
 
     public static PackageManager getPm() {
@@ -57,5 +60,16 @@ public class AppInstance extends Application {
             version = "---";
         }
         return version;
+    }
+
+    public static File getFiles() { return AppInstance.applicationContext.getFilesDir(); }
+
+    public static String getFilesDirectory() {
+        final File tmp = getFiles();
+        if (tmp != null && tmp.exists()) {
+            return tmp.getPath();
+        } else {
+            return "/data/data/" + AppInstance.applicationContext.getPackageName();
+        }
     }
 }

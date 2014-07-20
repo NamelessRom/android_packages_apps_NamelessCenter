@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import org.namelessrom.center.fragments.preferences.NamelessPreferenceFragment;
 import org.namelessrom.center.fragments.preferences.RomUpdatePreferenceFragment;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class SettingsActivity extends PreferenceActivity {
             "org.namelessrom.providers.activities.Preferences";
 
     private static final String[] ENTRY_FRAGMENTS = new String[]{
+            NamelessPreferenceFragment.class.getName(),
             RomUpdatePreferenceFragment.class.getName()
     };
 

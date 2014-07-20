@@ -14,16 +14,13 @@
    *
    *    You should have received a copy of the GNU General Public License
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
-<resources>
-    <string name="home">Home</string>
-    <string name="updates">Updates</string>
-    <string name="preferences">Preferences</string>
-    <string name="build_version">Build version</string>
-    <string name="version">Version: %s</string>
-    <string name="extras">Extras</string>
-    <string name="information">Information</string>
-    <string name="general">General</string>
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <string name="action_press_again">Press once again to exit!</string>
-</resources>
+    <SwitchPreference
+        android:key="pref_debug"
+        android:title="@string/debug_mode"
+        android:summary="@string/debug_mode_summary"
+        android:defaultValue="false" />
+
+</PreferenceScreen>

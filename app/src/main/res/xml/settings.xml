@@ -20,6 +20,13 @@
     <!-- Nameless Center Category -->
     <header android:title="@string/app_name" />
 
+    <!-- General Settings -->
+    <header
+        android:id="@id/general_settings"
+        android:title="@string/general"
+        android:summary="@string/general_summary"
+        android:fragment="org.namelessrom.center.fragments.preferences.NamelessPreferenceFragment" />
+
     <!-- Update Settings -->
     <header
         android:id="@id/update_settings"
