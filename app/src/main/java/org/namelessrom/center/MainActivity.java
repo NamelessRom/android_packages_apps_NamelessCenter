@@ -42,8 +42,10 @@ import org.namelessrom.center.database.DatabaseHandler;
 import org.namelessrom.center.fragments.updates.RomUpdateFragment;
 import org.namelessrom.center.interfaces.OnBackPressedListener;
 import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
+import org.namelessrom.center.services.UpdateCheckService;
 import org.namelessrom.center.utils.AnimationHelper;
 import org.namelessrom.center.utils.DrawableHelper;
+import org.namelessrom.center.utils.PreferenceHelper;
 
 import java.util.ArrayList;
 
@@ -87,6 +89,13 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
         // Set the initial fragment
         mCurrentFragment = processIntent(getIntent());
         loadFragment();
+
+        if (PreferenceHelper.getInt(Constants.UPDATE_CHECK_PREF, Constants.UPDATE_FREQ_WEEKLY)
+                == Constants.UPDATE_FREQ_AT_APP_START) {
+            final Intent i = new Intent(this, UpdateCheckService.class);
+            i.setAction(UpdateCheckService.ACTION_CHECK);
+            this.startService(i);
+        }
     }
 
     @Override protected void onDestroy() {
