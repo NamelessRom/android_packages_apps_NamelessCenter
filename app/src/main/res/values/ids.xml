@@ -17,7 +17,10 @@
   -->
 <resources>
     <!-- General -->
+    <item name="divider" type="id" />
     <item name="fragment_container" type="id" />
+    <!-- Rom Updates -->
+    <item name="rom_updates_cards_list" type="id" />
     <!-- Settings -->
     <item name="build_info" type="id" />
     <item name="nameless_provider" type="id" />

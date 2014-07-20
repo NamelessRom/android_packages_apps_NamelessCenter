@@ -30,6 +30,8 @@ public class Logger {
 
     public static synchronized void setEnabled(final boolean enable) { DEBUG = enable; }
 
+    public static synchronized boolean getEnabled() { return DEBUG; }
+
     public static void d(final Object object, final String msg) {
         if (DEBUG) Log.d(object.getClass().getSimpleName(), "--> " + msg);
     }

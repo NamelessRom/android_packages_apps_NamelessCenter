@@ -27,11 +27,16 @@ import android.graphics.drawable.Drawable;
 import com.larvalabs.svgandroid.SVGBuilder;
 
 import org.namelessrom.center.AppInstance;
+import org.namelessrom.center.R;
 
 /**
  * Makes our life easier at working with {@link android.graphics.drawable.Drawable}s
  */
 public class DrawableHelper {
+
+    public static Bitmap drawableToBitmap(final int resId) {
+        return drawableToBitmap(AppInstance.applicationContext.getResources().getDrawable(resId));
+    }
 
     public static Bitmap drawableToBitmap(final Drawable drawable) {
         if (drawable == null) return null;
