@@ -50,14 +50,12 @@ public class UpdateCheckService extends Service {
 
     // request actions
     public static final String ACTION_CHECK        = "org.namelessrom.center.action.CHECK";
-    public static final String ACTION_CANCEL_CHECK = "org.namelessrom.center.action.CANCEL_CHECK";
     public static final String ACTION_CHECK_UI     = "org.namelessrom.center.action.CHECK_UI";
+    public static final String ACTION_CANCEL_CHECK = "org.namelessrom.center.action.CANCEL_CHECK";
 
     // broadcast actions
     public static final String ACTION_CHECK_FINISHED =
             "org.namelessrom.center.action.UPDATE_CHECK_FINISHED";
-    // extra for ACTION_CHECK_FINISHED: total amount of found updates
-    public static final String EXTRA_UPDATE_COUNT    = "update_count";
 
     // max. number of updates listed in the expanded notification
     private static final int EXPANDED_NOTIF_UPDATE_COUNT = 4;
@@ -131,8 +129,7 @@ public class UpdateCheckService extends Service {
                 final String md5sum = info.getMd5();
                 final String urlFile = info.getUrl();
                 final String timeStamp = info.getTimestamp();
-                if (currentDate <= Helper.parseDate(timeStamp)
-                        || Helper.isUpdateDownloaded(info.getZipName())) {
+                if (currentDate <= Helper.parseDate(timeStamp) || info.isDownloaded()) {
                     updates.add(new UpdateInfo(channel, name, md5sum, urlFile, timeStamp));
                 }
             }

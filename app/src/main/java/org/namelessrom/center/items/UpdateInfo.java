@@ -23,6 +23,9 @@ import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.namelessrom.center.utils.UpdateHelper;
+
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -40,16 +43,14 @@ public class UpdateInfo implements Parcelable, Serializable {
     public static final int CHANNEL_RC        = 4;
     public static final int CHANNEL_STABLE    = 5;
 
-    @SerializedName("channel") private     String mChannel   = "-";
-    @SerializedName("filename") private    String mName      = "-";
-    @SerializedName("md5sum") private      String mMd5       = "-";
-    @SerializedName("downloadurl") private String mUrl       = "-";
-    @SerializedName("timestamp") private   String mTimestamp = "-";
-
-    private String mChannelShort = "-";
-    private int    mChannelType  = -2;
-
-    private boolean mIsDownloading = false;
+    @SerializedName("channel") private       String  mChannel       = "-";
+    @SerializedName("channelShort") private  String  mChannelShort  = "-";
+    @SerializedName("channelType") private   int     mChannelType   = -2;
+    @SerializedName("filename") private      String  mName          = "-";
+    @SerializedName("md5sum") private        String  mMd5           = "-";
+    @SerializedName("downloadurl") private   String  mUrl           = "-";
+    @SerializedName("timestamp") private     String  mTimestamp     = "-";
+    @SerializedName("isDownloading") private boolean mIsDownloading = false;
 
     public UpdateInfo() { }
 
@@ -58,7 +59,7 @@ public class UpdateInfo implements Parcelable, Serializable {
     public UpdateInfo(final String updateChannel, final String updateName, final String updateMd5,
             final String updateUrl, final String updateTimeStamp) {
         mChannel = updateChannel;
-        mName = updateName;
+        mName = updateName.replace(".zip", "");
         mMd5 = updateMd5;
         mUrl = updateUrl;
         mTimestamp = updateTimeStamp;
@@ -98,6 +99,8 @@ public class UpdateInfo implements Parcelable, Serializable {
         return mName;
     }
 
+    public File getPath() { return UpdateHelper.getUpdateFile(getZipName()); }
+
     public String getZipName() { return String.format("%s.zip", mName); }
 
     public String getChannel() { return mChannel; }
@@ -115,6 +118,8 @@ public class UpdateInfo implements Parcelable, Serializable {
     public String getTimestamp() { return mTimestamp; }
 
     public boolean isDownloading() { return mIsDownloading; }
+
+    public boolean isDownloaded() { return UpdateHelper.isUpdateDownloaded(getZipName()); }
 
     public UpdateInfo setChannel(final String mChannel) {
         this.mChannel = mChannel;
@@ -184,6 +189,7 @@ public class UpdateInfo implements Parcelable, Serializable {
     @Override public void writeToParcel(final Parcel parcel, final int i) {
         parcel.writeString(mChannel);
         parcel.writeString(mChannelShort);
+        parcel.writeInt(mChannelType);
         parcel.writeString(mName);
         parcel.writeString(mMd5);
         parcel.writeString(mUrl);
@@ -194,6 +200,7 @@ public class UpdateInfo implements Parcelable, Serializable {
     private void readFromParcel(final Parcel in) {
         mChannel = in.readString();
         mChannelShort = in.readString();
+        mChannelType = in.readInt();
         mName = in.readString();
         mMd5 = in.readString();
         mUrl = in.readString();

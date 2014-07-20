@@ -22,6 +22,8 @@ package org.namelessrom.center;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 
 import org.namelessrom.center.utils.DebugHelper;
 import org.namelessrom.center.utils.Helper;
@@ -36,6 +38,8 @@ public class AppInstance extends Application {
 
     public static Context applicationContext;
 
+    private static final Handler handler = new Handler(Looper.getMainLooper());
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -43,8 +47,9 @@ public class AppInstance extends Application {
         applicationContext = getApplicationContext();
 
         DebugHelper.setEnabled(Helper.isNamelessDebug());
-
         Logger.setEnabled(PreferenceHelper.getBoolean(PreferenceHelper.DEBUG, false));
+
+        Helper.createDirectories();
     }
 
     public static PackageManager getPm() {
@@ -72,4 +77,14 @@ public class AppInstance extends Application {
             return "/data/data/" + AppInstance.applicationContext.getPackageName();
         }
     }
+
+    public static String getStr(final int resId) {
+        return AppInstance.applicationContext.getString(resId);
+    }
+
+    public static String getStr(final int resId, final Object... objects) {
+        return AppInstance.applicationContext.getString(resId, objects);
+    }
+
+    public static Handler getHandler() { return handler; }
 }
