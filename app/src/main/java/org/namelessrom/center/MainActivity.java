@@ -37,12 +37,15 @@ import android.view.ViewGroup;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
 
+import org.namelessrom.center.fragments.updates.RomUpdateFragment;
+import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
 import org.namelessrom.center.utils.AnimationHelper;
 import org.namelessrom.center.utils.DrawableHelper;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity implements OnFragmentLoadedListener,
+        View.OnClickListener {
 
     private ResideMenu mResideMenu;
 
@@ -115,40 +118,39 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override public void onClick(final View v) {
         if (!(v instanceof ResideMenuItem)) return;
 
-        Fragment fragment = null;
-        final int id = ((ResideMenuItem) v).getMenuId();
+        final ResideMenuItem item = ((ResideMenuItem) v);
+        final int id = item.getMenuId();
 
-        final ObjectAnimator animator =
-                AnimationHelper.scaleX(((ResideMenuItem) v).getIcon(), 0.0f, 1.0f, 200);
+        final ObjectAnimator animator = AnimationHelper.scaleX(item.getIcon(), 0.0f, 1.0f, 150);
         animator.addListener(new Animator.AnimatorListener() {
-            @Override public void onAnimationStart(Animator animation) { }
+            @Override public void onAnimationStart(final Animator animation) { }
 
             @Override
-            public void onAnimationEnd(Animator animation) {
-                if (id == Constants.MENU_ID_PREFERENCES) {
-                    final Intent i = new Intent(MainActivity.this, SettingsActivity.class);
-                    startActivity(i);
-                    overridePendingTransition(R.anim.enter_left, R.anim.enter_right);
+            public void onAnimationEnd(final Animator animation) {
+                Fragment fragment = null;
+                switch (id) {
+                    default:
+                    case Constants.MENU_ID_HOME:
+                        fragment = new PlaceholderFragment();
+                        break;
+                    case Constants.MENU_ID_UPDATES:
+                        fragment = new RomUpdateFragment();
+                        break;
+                    case Constants.MENU_ID_PREFERENCES:
+                        final Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivity(i);
+                        overridePendingTransition(R.anim.enter_left, R.anim.enter_right);
+                        break;
                 }
+
+                if (fragment != null) loadFragment(fragment);
             }
 
-            @Override public void onAnimationCancel(Animator animation) { }
+            @Override public void onAnimationCancel(final Animator animation) { }
 
-            @Override public void onAnimationRepeat(Animator animation) { }
+            @Override public void onAnimationRepeat(final Animator animation) { }
         });
         animator.start();
-
-        switch (id) {
-            default:
-            case Constants.MENU_ID_HOME:
-            case Constants.MENU_ID_UPDATES:
-                fragment = new PlaceholderFragment();
-                break;
-            case Constants.MENU_ID_PREFERENCES:
-                // handled by animation listener
-                break;
-        }
-        if (fragment != null) loadFragment(fragment);
     }
 
     @Override public boolean onOptionsItemSelected(final MenuItem item) {
@@ -185,6 +187,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 .replace(R.id.fragment_container, fragment)
                 .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
+    }
+
+    @Override public void onFragmentLoaded() {
         if (mResideMenu.isOpened()) mResideMenu.closeMenu();
     }
 
@@ -205,6 +210,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
             });
             return rootView;
+        }
+
+        @Override public void onViewCreated(View view, Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            final Activity activity = getActivity();
+            if (activity != null &&
+                    activity instanceof org.namelessrom.center.interfaces.OnFragmentLoadedListener) {
+                ((org.namelessrom.center.interfaces.OnFragmentLoadedListener) activity)
+                        .onFragmentLoaded();
+            }
         }
     }
 }

@@ -15,23 +15,11 @@
    *    You should have received a copy of the GNU General Public License
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<resources>
-    <!-- General -->
-    <item name="divider" type="id" />
-    <item name="fragment_container" type="id" />
-    <!-- Rom Updates -->
-    <item name="rom_updates_cards_list" type="id" />
-    <!-- Settings -->
-    <item name="build_info" type="id" />
-    <item name="nameless_provider" type="id" />
-    <item name="update_settings" type="id" />
-    <!-- Reside menu -->
-    <item name="iv_background" type="id" />
-    <item name="iv_shadow" type="id" />
-    <item name="sv_left_menu" type="id" />
-    <item name="layout_left_menu" type="id" />
-    <item name="sv_right_menu" type="id" />
-    <item name="layout_right_menu" type="id" />
-    <item name="iv_icon" type="id" />
-    <item name="tv_title" type="id" />
-</resources>
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_thumbnail_image"
+    android:layout_width="75dp"
+    android:layout_height="75dp"
+    android:layout_margin="10dp"
+    android:padding="10dp"
+    android:background="@android:color/black"
+    style="@style/card_thumbnail_image" />
