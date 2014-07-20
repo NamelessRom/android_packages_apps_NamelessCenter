@@ -57,6 +57,8 @@ android {
 }
 
 dependencies {
+    compile fileTree(dir: '../libs' , include: '*.jar')
+    compile project(':cardslib:library')
     compile 'com.android.support:support-v13:20.+'
     compile 'com.jakewharton:butterknife:5.+'
     compile 'com.koushikdutta.ion:ion:1.+'
