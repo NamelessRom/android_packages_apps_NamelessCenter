@@ -159,12 +159,19 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
         final ResideMenuItem item = ((ResideMenuItem) v);
         final int id = item.getMenuId();
 
-        final ObjectAnimator animator = AnimationHelper.scaleX(item.getIcon(), 0.0f, 1.0f, 150);
+        // get the view we want to animate
+        final View view = item.getIcon();
+        // save its current layertype to restore it later. this is needed as, in this case, the view
+        // is a circularimageview, which uses a software layer to render the borders and shadow
+        final int layerType = view.getLayerType();
+        view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        final ObjectAnimator animator = AnimationHelper.scaleX(view, 0.0f, 1.0f, 150);
         animator.addListener(new Animator.AnimatorListener() {
             @Override public void onAnimationStart(final Animator animation) { }
 
             @Override
             public void onAnimationEnd(final Animator animation) {
+                view.setLayerType(layerType, null);
                 switch (id) {
                     default:
                     case Constants.MENU_ID_HOME:
@@ -263,10 +270,8 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
         @Override public void onViewCreated(View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             final Activity activity = getActivity();
-            if (activity != null &&
-                    activity instanceof org.namelessrom.center.interfaces.OnFragmentLoadedListener) {
-                ((org.namelessrom.center.interfaces.OnFragmentLoadedListener) activity)
-                        .onFragmentLoaded();
+            if (activity != null && activity instanceof OnFragmentLoadedListener) {
+                ((OnFragmentLoadedListener) activity).onFragmentLoaded();
             }
         }
     }

@@ -322,8 +322,6 @@ public class ResideMenu extends FrameLayout {
             if (isOpened()) {
                 scrollViewMenu.setVisibility(VISIBLE);
                 if (menuListener != null) { menuListener.openMenu(); }
-            } else {
-                manageLayers(true);
             }
         }
 
@@ -343,7 +341,6 @@ public class ResideMenu extends FrameLayout {
                 viewActivity.setOnClickListener(null);
                 scrollViewMenu.setVisibility(GONE);
                 if (menuListener != null) { menuListener.closeMenu(); }
-                manageLayers(false);
             }
         }
 
@@ -353,19 +350,6 @@ public class ResideMenu extends FrameLayout {
         @Override
         public void onAnimationRepeat(Animator animation) { }
     };
-
-    private void manageLayers(final boolean animationStart) {
-        if (getHandler() == null) return;
-        getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                final int layerType =
-                        (animationStart ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE);
-                scrollViewMenu.setLayerType(layerType, null);
-                viewActivity.setLayerType(layerType, null);
-            }
-        });
-    }
 
     private void setScaleDirectionByRawX(final float currentRawX) {
         if (currentRawX < lastRawX) {

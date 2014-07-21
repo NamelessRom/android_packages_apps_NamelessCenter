@@ -145,13 +145,16 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
     private void refreshUpdates() {
         // cross fade the listview and progress view and ...
         final AnimatorSet animatorSet = new AnimatorSet();
-        final ObjectAnimator listAnimator = AnimationHelper.alpha(mCardListView, 1f, 0f);
-        final ObjectAnimator progAnimator = AnimationHelper.alpha(mProgressView, 0f, 1f);
-        animatorSet.play(listAnimator).with(progAnimator);
+        final ObjectAnimator listAnim = AnimationHelper.alpha(mCardListView, 1f, 0f, 300);
+        final ObjectAnimator progAnim = AnimationHelper.alpha(mProgressView, 0f, 1f, 300);
+        animatorSet.play(listAnim).with(progAnim);
         animatorSet.addListener(new Animator.AnimatorListener() {
-            @Override public void onAnimationStart(final Animator animation) { }
+            @Override public void onAnimationStart(final Animator animation) {
+                mCardListView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
 
             @Override public void onAnimationEnd(final Animator animation) {
+                mCardListView.setLayerType(View.LAYER_TYPE_NONE, null);
                 final Intent i = new Intent(
                         AppInstance.applicationContext, UpdateCheckService.class);
                 i.setAction(UpdateCheckService.ACTION_CHECK_UI);
@@ -220,9 +223,22 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
             // cross fade our list view and progress view again
             if (mCardListView != null) {
                 final AnimatorSet animatorSet = new AnimatorSet();
-                final ObjectAnimator listAnimator = AnimationHelper.alpha(mCardListView, 0f, 1f);
-                final ObjectAnimator progAnimator = AnimationHelper.alpha(mProgressView, 1f, 0f);
-                animatorSet.play(listAnimator).with(progAnimator);
+                final ObjectAnimator listAnim = AnimationHelper.alpha(mCardListView, 0f, 1f, 300);
+                final ObjectAnimator progAnim = AnimationHelper.alpha(mProgressView, 1f, 0f, 300);
+                animatorSet.play(listAnim).with(progAnim);
+                animatorSet.addListener(new Animator.AnimatorListener() {
+                    @Override public void onAnimationStart(final Animator animator) {
+                        mCardListView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                    }
+
+                    @Override public void onAnimationEnd(final Animator animator) {
+                        mCardListView.setLayerType(View.LAYER_TYPE_NONE, null);
+                    }
+
+                    @Override public void onAnimationCancel(final Animator animator) { }
+
+                    @Override public void onAnimationRepeat(final Animator animator) { }
+                });
                 animatorSet.start();
             }
         }
@@ -265,6 +281,8 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
             super(context, cards);
             // TODO: load cards with already downloaded updates (hint: database + file check)
         }
+
+        @Override public boolean hasStableIds() { return true; }
 
         @Override public View getView(int position, View convertView, ViewGroup parent) {
             if (mDownloading.size() > 0 && getItem(position) instanceof RomUpdateCard) {
