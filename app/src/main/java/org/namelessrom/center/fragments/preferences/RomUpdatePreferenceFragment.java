@@ -20,6 +20,7 @@
 package org.namelessrom.center.fragments.preferences;
 
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -37,6 +38,10 @@ public class RomUpdatePreferenceFragment extends PreferenceFragment
     private ListPreference mUpdateChannel;
     private ListPreference mUpdateCheck;
     private ListPreference mRecoveryType;
+
+    private CheckBoxPreference mMetered;
+    private CheckBoxPreference mMeteredSkipWarn;
+    private CheckBoxPreference mRoaming;
 
     @Override public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +74,26 @@ public class RomUpdatePreferenceFragment extends PreferenceFragment
             mRecoveryType.setValue(String.valueOf(tmp));
             setSummary(mRecoveryType, tmp);
             mRecoveryType.setOnPreferenceChangeListener(this);
+        }
+
+        mMetered = (CheckBoxPreference) findPreference(Constants.PREF_UPDATE_METERED);
+        if (mMetered != null) {
+            mMetered.setChecked(PreferenceHelper.getBoolean(mMetered.getKey(), true));
+            mMetered.setOnPreferenceChangeListener(this);
+        }
+
+        mMeteredSkipWarn =
+                (CheckBoxPreference) findPreference(Constants.PREF_UPDATE_METERED_SKIP_WARNING);
+        if (mMeteredSkipWarn != null) {
+            mMeteredSkipWarn.setChecked(
+                    PreferenceHelper.getBoolean(mMeteredSkipWarn.getKey(), true));
+            mMeteredSkipWarn.setOnPreferenceChangeListener(this);
+        }
+
+        mRoaming = (CheckBoxPreference) findPreference(Constants.PREF_UPDATE_ROAMING);
+        if (mRoaming != null) {
+            mRoaming.setChecked(PreferenceHelper.getBoolean(mRoaming.getKey(), false));
+            mRoaming.setOnPreferenceChangeListener(this);
         }
     }
 
@@ -146,6 +171,12 @@ public class RomUpdatePreferenceFragment extends PreferenceFragment
             final int value = Integer.valueOf(String.valueOf(o));
             PreferenceHelper.setInt(Constants.PREF_RECOVERY_TYPE, value);
             setSummary(preference, value);
+            return true;
+        } else if (mMetered == preference || mMeteredSkipWarn == preference
+                || mRoaming == preference) {
+            final boolean value = (Boolean) o;
+            PreferenceHelper.setBoolean(preference.getKey(), value);
+            ((CheckBoxPreference) preference).setChecked(value);
             return true;
         }
 

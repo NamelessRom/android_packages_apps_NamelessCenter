@@ -65,6 +65,13 @@ public class Helper {
         return cm.isActiveNetworkMetered();
     }
 
+    public static boolean isRoaming() {
+        final ConnectivityManager cm = (ConnectivityManager)
+                AppInstance.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isRoaming();
+    }
+
     public static String readBuildProp(final String prop) {
         FileReader fileReader = null;
         BufferedReader bufferedReader = null;
