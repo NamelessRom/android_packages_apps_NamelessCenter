@@ -46,6 +46,7 @@ import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
 import org.namelessrom.center.cards.RomUpdateCard;
 import org.namelessrom.center.cards.SimpleCard;
+import org.namelessrom.center.events.DownloadErrorEvent;
 import org.namelessrom.center.events.DownloadProgressEvent;
 import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
 import org.namelessrom.center.items.UpdateInfo;
@@ -53,6 +54,7 @@ import org.namelessrom.center.services.UpdateCheckService;
 import org.namelessrom.center.utils.AnimationHelper;
 import org.namelessrom.center.utils.BusProvider;
 import org.namelessrom.center.utils.DebugHelper;
+import org.namelessrom.center.utils.UpdateHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -244,6 +246,14 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
         mCardArrayAdapter.getDownloading().remove(event.getId());
         mCardArrayAdapter.getDownloading().put(event.getId(), event.getPercentage());
+
+        updateCards();
+    }
+
+    @Subscribe public void onDownloadErrorEvent(final DownloadErrorEvent event) {
+        if (event == null) return;
+
+        UpdateHelper.getDownloadErrorDialog(getActivity(), event.getReason()).show();
 
         updateCards();
     }

@@ -33,6 +33,7 @@ import android.os.storage.StorageVolume;
 import org.namelessrom.center.AppInstance;
 import org.namelessrom.center.Constants;
 import org.namelessrom.center.R;
+import org.namelessrom.center.events.DownloadErrorEvent;
 import org.namelessrom.center.events.DownloadProgressEvent;
 import org.namelessrom.center.items.UpdateInfo;
 
@@ -68,6 +69,44 @@ public class UpdateHelper {
             @Override public void onClick(DialogInterface dialogInterface, int i) {
                 UpdateHelper.deleteUpdate(updateInfo.getZipName());
                 BusProvider.getBus().post(new DownloadProgressEvent("0", 101));
+            }
+        });
+
+        return builder.create();
+    }
+
+    public static AlertDialog getDownloadErrorDialog(final Context context, final int reason) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        final int title, message;
+        switch (reason) {
+            default:
+            case DownloadErrorEvent.REASON_UNKNOWN:
+                title = R.string.error;
+                message = R.string.error_unknown;
+                break;
+            case DownloadErrorEvent.REASON_OFFLINE:
+                title = R.string.error;
+                message = R.string.error_offline;
+                break;
+            case DownloadErrorEvent.REASON_METERED:
+                title = R.string.error;
+                message = R.string.error_metered;
+                break;
+            case DownloadErrorEvent.REASON_METERED_WARN:
+                title = R.string.warning;
+                message = R.string.warning_metered;
+                break;
+            case DownloadErrorEvent.REASON_ROAMING:
+                title = R.string.error;
+                message = R.string.error_roaming;
+                break;
+        }
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
             }
         });
 

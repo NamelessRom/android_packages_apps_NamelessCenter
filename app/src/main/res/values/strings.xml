@@ -43,6 +43,7 @@
     <string name="download_in_progress">Download in progress…</string>
     <string name="please_wait">Please wait until the operation finishes…</string>
 
+    <string name="error">Error!</string>
     <string name="warning">Warning!</string>
     <string name="md5sum_warning">The MD5 checksum of "%s" does not match the downloaded file!\n\nPlease ensure the file is not corrupt! If you continue to see these errors, you may try to flash the file manually, on your own risk!</string>
 
@@ -63,4 +64,10 @@
     <string name="new_updates_found_title">New updates</string>
     <string name="data_connection_required">A data connection is required.</string>
     <string name="no_updates_available">No updates available</string>
+
+    <string name="error_unknown">An unknown error occurred, please try again!</string>
+    <string name="error_offline">The device has no active data connection, aborting.</string>
+    <string name="error_metered">The device is using a metered connection, aborting.</string>
+    <string name="error_roaming">The device uses roaming, aborting.</string>
+    <string name="warning_metered">The device is using a metered connection!</string>
 </resources>

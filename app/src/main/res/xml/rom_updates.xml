@@ -52,21 +52,21 @@
 
         <CheckBoxPreference
             android:key="pref_update_metered"
-            android:persistent="true"
+            android:persistent="false"
             android:title="@string/update_metered_title"
             android:summary="@string/update_metered_summary"
             android:defaultValue="true" />
 
         <CheckBoxPreference
             android:key="pref_update_metered_skip_warn"
-            android:persistent="true"
+            android:persistent="false"
             android:title="@string/update_metered_skip_warn_title"
             android:defaultValue="false"
             android:dependency="pref_update_metered" />
 
         <CheckBoxPreference
             android:key="pref_update_roaming"
-            android:persistent="true"
+            android:persistent="false"
             android:title="@string/update_roaming_title"
             android:summary="@string/update_roaming_summary"
             android:defaultValue="false" />
