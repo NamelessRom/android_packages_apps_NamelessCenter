@@ -188,6 +188,7 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
         fileResponseFuture = Ion.with(downloadService)
                 .load(updateInfo.getUrl())
                 .progress(this)
+                .noCache()
                 .write(UpdateHelper.getUpdateFile(updateInfo.getZipName()));
 
         return RESULT_OK;
