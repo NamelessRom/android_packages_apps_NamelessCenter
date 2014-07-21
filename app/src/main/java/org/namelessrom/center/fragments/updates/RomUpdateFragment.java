@@ -42,7 +42,6 @@ import android.view.ViewGroup;
 import com.squareup.otto.Subscribe;
 
 import org.namelessrom.center.AppInstance;
-import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
 import org.namelessrom.center.cards.RomUpdateCard;
 import org.namelessrom.center.cards.SimpleCard;
@@ -184,13 +183,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
         if (result != null && result.size() != 0) mCardArrayAdapter.addAll(result);
 
         // and update it
-        updateCards();
-    }
-
-    private void updateCards() {
-        Logger.v(this, "updateCards()");
         mCardArrayAdapter.notifyDataSetChanged();
-        mCardListView.invalidate();
     }
 
     private final class UpdateCardTask extends AsyncTask<Void, Void, ArrayList<Card>> {
@@ -263,7 +256,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
         mCardArrayAdapter.getDownloading().remove(event.getId());
         mCardArrayAdapter.getDownloading().put(event.getId(), event.getPercentage());
 
-        updateCards();
+        mCardArrayAdapter.notifyDataSetChanged();
     }
 
     @Subscribe public void onDownloadErrorEvent(final DownloadErrorEvent event) {
@@ -271,7 +264,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
         UpdateHelper.getDownloadErrorDialog(getActivity(), event.getReason()).show();
 
-        updateCards();
+        mCardArrayAdapter.notifyDataSetChanged();
     }
 
     private class RomUpdateCardArrayAdapter extends CardArrayAdapter {
