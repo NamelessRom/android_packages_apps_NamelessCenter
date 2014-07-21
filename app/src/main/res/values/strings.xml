@@ -52,6 +52,10 @@
     <string name="unable_to_download_file">Unable to download the rom update file</string>
     <string name="unable_to_reboot_toast">Unable to reboot into recovery</string>
 
+    <string name="installed_version">Installed version</string>
+    <string name="swipe_refresh">Swipe me away to refresh!</string>
+    <string name="size_used">Size used on sdcard</string>
+
     <!-- Update checking -->
     <string name="update_check_failed">The update check failed. Please check your internet connection and try again later.</string>
     <string name="new_updates_found_ticker">New updates are available</string>
