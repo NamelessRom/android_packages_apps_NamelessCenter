@@ -113,7 +113,8 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
                                     .setOngoing(false)
                                     .setContentTitle(success)
                                     .setTicker(success)
-                                    .setContentText(updateInfo.getReadableName());
+                                    .setContentText(updateInfo.getReadableName())
+                                    .setProgress(0, 0, false);
 
                             final Notification.BigTextStyle style = new Notification.BigTextStyle();
                             style.setBigContentTitle(success);
@@ -187,8 +188,8 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
         }
         fileResponseFuture = Ion.with(downloadService)
                 .load(updateInfo.getUrl())
-                .progress(this)
                 .noCache()
+                .progress(this)
                 .write(UpdateHelper.getUpdateFile(updateInfo.getZipName()));
 
         return RESULT_OK;
@@ -229,7 +230,8 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
                 .setOngoing(false)
                 .setContentTitle(AppInstance.getStr(R.string.download_failure))
                 .setContentText(AppInstance.getStr(R.string.unable_to_download_file))
-                .setTicker(AppInstance.getStr(R.string.download_failure));
+                .setTicker(AppInstance.getStr(R.string.download_failure))
+                .setProgress(0, 0, false);
 
         downloadService.updateNotification(NOTIFICATION_ID, notificationBuilder.build());
     }
