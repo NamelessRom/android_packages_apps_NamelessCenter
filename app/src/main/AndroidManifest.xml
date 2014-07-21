@@ -56,6 +56,12 @@
             android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="org.namelessrom.center.MainActivity" />
+                <action android:name="org.namelessrom.center.activities.MainActivity" />
+                <action android:name="org.namelessrom.center.UPDATES" />
+                <action android:name="org.namelessrom.updatecenter.MainActivity" />
+                <action android:name="org.namelessrom.updatecenter.activities.MainActivity" />
+                <action android:name="org.namelessrom.updatecenter.UPDATES" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
