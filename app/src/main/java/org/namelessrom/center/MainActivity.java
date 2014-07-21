@@ -195,7 +195,6 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
         final int id = item.getItemId();
 
         switch (id) {
-            default:
             case android.R.id.home:
                 if (!mResideMenu.isOpened()) mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
                 break;

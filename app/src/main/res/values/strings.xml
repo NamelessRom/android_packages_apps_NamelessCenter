@@ -27,6 +27,7 @@
     <string name="unknown">Unknown</string>
 
     <string name="action_press_again">Press once again to exit!</string>
+    <string name="refresh">Refresh</string>
 
     <string name="install">Install</string>
     <string name="download">Download</string>

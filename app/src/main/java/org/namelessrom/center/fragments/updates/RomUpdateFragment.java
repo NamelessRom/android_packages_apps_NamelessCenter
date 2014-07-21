@@ -20,6 +20,7 @@
 package org.namelessrom.center.fragments.updates;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Fragment;
@@ -32,6 +33,9 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -65,6 +69,7 @@ import static butterknife.ButterKnife.findById;
  */
 public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener {
 
+    private View                      mProgressView;
     private CardListView              mCardListView;
     private RomUpdateCardArrayAdapter mCardArrayAdapter;
 
@@ -78,7 +83,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
         AppInstance.applicationContext.registerReceiver(updateCheckReceiver, intentFilter);
 
         // update cards
-        updateCards();
+        refreshUpdates();
     }
 
     @Override public void onPause() {
@@ -93,6 +98,8 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
             final Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_rom_update, container, false);
 
+        mProgressView = findById(v, R.id.romUpdates_progress_view);
+        mProgressView.setAlpha(0.0f);
         mCardListView = findById(v, R.id.rom_updates_cards_list);
 
         mCardArrayAdapter = new RomUpdateCardArrayAdapter(getActivity(), new ArrayList<Card>());
@@ -103,22 +110,43 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
     @Override public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
         final Activity activity = getActivity();
         if (activity != null && activity instanceof OnFragmentLoadedListener) {
             ((OnFragmentLoadedListener) activity).onFragmentLoaded();
         }
+    }
 
-        // add our refresh card
-        new UpdateCardTask(null).execute();
+    @Override public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.rom_update, menu);
+    }
+
+    @Override public boolean onOptionsItemSelected(final MenuItem item) {
+        final int id = item.getItemId();
+
+        switch (id) {
+            case R.id.menu_refresh:
+                refreshUpdates();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override public void onSwipe(final Card card) {
         // return if its not our simple card or the listview is null (wtf?)
         if (!(card instanceof SimpleCard) || mCardListView == null) return;
+        refreshUpdates();
+    }
 
-        // fade out the listview and ...
-        final ObjectAnimator animator = AnimationHelper.alpha(mCardListView, 1f, 0f);
-        animator.addListener(new Animator.AnimatorListener() {
+    private void refreshUpdates() {
+        // cross fade the listview and progress view and ...
+        final AnimatorSet animatorSet = new AnimatorSet();
+        final ObjectAnimator listAnimator = AnimationHelper.alpha(mCardListView, 1f, 0f);
+        final ObjectAnimator progAnimator = AnimationHelper.alpha(mProgressView, 0f, 1f);
+        animatorSet.play(listAnimator).with(progAnimator);
+        animatorSet.addListener(new Animator.AnimatorListener() {
             @Override public void onAnimationStart(final Animator animation) { }
 
             @Override public void onAnimationEnd(final Animator animation) {
@@ -132,7 +160,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
             @Override public void onAnimationRepeat(final Animator animation) { }
         });
-        animator.start();
+        animatorSet.start();
     }
 
     private void addCards(final ArrayList<Card> result) {
@@ -187,8 +215,14 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
         @Override protected void onPostExecute(final ArrayList<Card> result) {
             addCards(result);
-            // fade in our list view
-            if (mCardListView != null) AnimationHelper.alpha(mCardListView, 0f, 1f).start();
+            // cross fade our list view and progress view again
+            if (mCardListView != null) {
+                final AnimatorSet animatorSet = new AnimatorSet();
+                final ObjectAnimator listAnimator = AnimationHelper.alpha(mCardListView, 0f, 1f);
+                final ObjectAnimator progAnimator = AnimationHelper.alpha(mProgressView, 1f, 0f);
+                animatorSet.play(listAnimator).with(progAnimator);
+                animatorSet.start();
+            }
         }
     }
 
