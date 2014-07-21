@@ -21,12 +21,6 @@
     android:layout_height="match_parent"
     android:background="@color/card_list_background">
 
-    <ProgressBar
-        android:id="@+id/romUpdates_progress_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true" />
-
     <it.gmariotti.cardslib.library.view.CardListView
         android:id="@id/rom_updates_cards_list"
         android:layout_width="match_parent"
@@ -34,6 +28,23 @@
         android:layout_marginTop="10dp"
         android:animateLayoutChanges="true"
         card:list_card_layout_resourceID="@layout/card_list_image_layout" />
+
+    <FrameLayout
+        android:id="@+id/rom_updates_changelog_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <WebView
+            android:id="@+id/rom_updates_changelog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/rom_updates_progress_view"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true" />
 
     <!--include
         layout="@layout/list_card_undo_message"

@@ -30,6 +30,7 @@
     <string name="refresh">Refresh</string>
 
     <string name="install">Install</string>
+    <string name="changelog">Changelog</string>
     <string name="download">Download</string>
     <string name="delete_update">Delete update</string>
     <string name="delete_update_message">Do you really want to delete "%s"?</string>
