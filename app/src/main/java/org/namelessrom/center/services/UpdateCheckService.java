@@ -80,7 +80,7 @@ public class UpdateCheckService extends Service {
             return START_NOT_STICKY;
         }
 
-        Ion.with(this).load(getUpdateUrl()).as(UpdateInfo[].class).setCallback(mCallBack);
+        Ion.with(this).load(getUpdateUrl()).noCache().as(UpdateInfo[].class).setCallback(mCallBack);
 
         return super.onStartCommand(intent, flags, startId);
     }
