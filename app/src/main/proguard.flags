@@ -85,6 +85,12 @@
 
 -keep public class com.google.** {*;}
 
+# Otto
+-keepclassmembers class ** {
+    @com.squareup.otto.Subscribe public *;
+    @com.squareup.otto.Produce public *;
+}
+
 # Butterknife
 -dontwarn butterknife.internal.**
 -keep class **$$ViewInjector { *; }
