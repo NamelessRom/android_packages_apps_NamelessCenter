@@ -91,12 +91,16 @@ public class UpdateInfo implements Parcelable, Serializable {
         }
     }
 
-    public String getReadableName() {
-        final String[] splitted = mName.split("-");
+    public static String getReadableName(final String name) {
+        final String[] splitted = name.split("-");
         if (splitted.length > 2) {
             return splitted[0] + "-" + splitted[1] + "-" + splitted[2];
         }
-        return mName;
+        return name;
+    }
+
+    public String getReadableName() {
+        return UpdateInfo.getReadableName(mName);
     }
 
     public File getPath() { return UpdateHelper.getUpdateFile(getZipName()); }

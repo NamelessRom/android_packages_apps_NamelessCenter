@@ -156,4 +156,36 @@ public class Helper {
         }
     }
 
+    /**
+     * Gets the size of a directory in bytes
+     *
+     * @param dir
+     * @return
+     */
+    public static long dirSize(final File dir) {
+        long result = 0;
+        if (dir.exists()) {
+            final File[] fileList = dir.listFiles();
+            for (final File aFileList : fileList) {
+                if (aFileList.isDirectory()) {
+                    result += dirSize(aFileList);
+                } else {
+                    result += aFileList.length();
+                }
+            }
+        }
+        return result;
+    }
+
+    public static long dirSize(final String path) {
+        return dirSize(new File(path));
+    }
+
+    public static String humanReadableByteCount(final long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        final int exp = (int) (Math.log(bytes) / Math.log(1024));
+        return String.format("%.1f %sB", bytes / Math.pow(1024, exp),
+                String.valueOf("kMGTPE".charAt(exp - 1)));
+    }
+
 }

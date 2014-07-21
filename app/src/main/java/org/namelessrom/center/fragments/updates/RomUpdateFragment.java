@@ -76,6 +76,9 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UpdateCheckService.ACTION_CHECK_FINISHED);
         AppInstance.applicationContext.registerReceiver(updateCheckReceiver, intentFilter);
+
+        // update cards
+        updateCards();
     }
 
     @Override public void onPause() {
