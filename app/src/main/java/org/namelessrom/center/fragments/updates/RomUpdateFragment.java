@@ -37,23 +37,34 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.webkit.WebView;
+import android.widget.FrameLayout;
 
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 import com.squareup.otto.Subscribe;
 
 import org.namelessrom.center.AppInstance;
+import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
 import org.namelessrom.center.cards.RomUpdateCard;
 import org.namelessrom.center.cards.SimpleCard;
+import org.namelessrom.center.events.ChangelogEvent;
 import org.namelessrom.center.events.DownloadErrorEvent;
 import org.namelessrom.center.events.DownloadProgressEvent;
+import org.namelessrom.center.interfaces.OnBackPressedListener;
 import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
 import org.namelessrom.center.items.UpdateInfo;
 import org.namelessrom.center.services.UpdateCheckService;
 import org.namelessrom.center.utils.AnimationHelper;
 import org.namelessrom.center.utils.BusProvider;
 import org.namelessrom.center.utils.DebugHelper;
+import org.namelessrom.center.utils.FileUtils;
 import org.namelessrom.center.utils.UpdateHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,11 +78,16 @@ import static butterknife.ButterKnife.findById;
 /**
  * A fragment showcasing our rom updates
  */
-public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener {
+public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
+        OnBackPressedListener {
 
     private View                      mProgressView;
     private CardListView              mCardListView;
     private RomUpdateCardArrayAdapter mCardArrayAdapter;
+
+    private WebView     mChangelog;
+    private FrameLayout mChangelogContainer;
+    private boolean isChangelogShowing = false;
 
     public RomUpdateFragment() { }
 
@@ -98,9 +114,14 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
             final Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_rom_update, container, false);
 
-        mProgressView = findById(v, R.id.romUpdates_progress_view);
+        mProgressView = findById(v, R.id.rom_updates_progress_view);
         mProgressView.setAlpha(0.0f);
         mCardListView = findById(v, R.id.rom_updates_cards_list);
+
+        mChangelogContainer = findById(v, R.id.rom_updates_changelog_container);
+        mChangelog = findById(v, R.id.rom_updates_changelog);
+        // enable javascript for our sweet scripts
+        mChangelog.getSettings().setJavaScriptEnabled(true);
 
         mCardArrayAdapter = new RomUpdateCardArrayAdapter(getActivity(), new ArrayList<Card>());
         mCardListView.setAdapter(mCardArrayAdapter);
@@ -115,6 +136,13 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
         if (activity != null && activity instanceof OnFragmentLoadedListener) {
             ((OnFragmentLoadedListener) activity).onFragmentLoaded();
         }
+
+        // move the changelog container out of view
+        mChangelogContainer.post(new Runnable() {
+            @Override public void run() {
+                mChangelogContainer.setY(-mChangelogContainer.getHeight());
+            }
+        });
     }
 
     @Override public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
@@ -127,7 +155,11 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
         switch (id) {
             case R.id.menu_refresh:
-                refreshUpdates();
+                if (isChangelogShowing) {
+                    dismissChangelog(true);
+                } else {
+                    refreshUpdates();
+                }
                 return true;
         }
 
@@ -180,6 +212,87 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
         // and update it
         mCardArrayAdapter.notifyDataSetChanged();
+    }
+
+    private boolean isAnimating = false;
+
+    @Override public boolean onBackPressed() {
+        if (isChangelogShowing) {
+            dismissChangelog(false);
+            return true;
+        } else if (isAnimating) {
+            return true;
+        }
+        return false;
+    }
+
+    @Subscribe public void onChangelogEvent(final ChangelogEvent event) {
+        if (event == null) return;
+
+        // Move in the changelog and progressview
+        final DecelerateInterpolator interpolator = new DecelerateInterpolator();
+        final ObjectAnimator moveY = ObjectAnimator.ofFloat(mChangelogContainer, "translationY",
+                -mChangelogContainer.getHeight(), 0);
+        moveY.setDuration(500);
+        moveY.setInterpolator(interpolator);
+
+        final ObjectAnimator alpha = ObjectAnimator.ofFloat(mChangelogContainer, "alpha", 0f, 1f);
+        alpha.setDuration(500);
+        alpha.setInterpolator(interpolator);
+
+        final ObjectAnimator progAnim = AnimationHelper.alpha(mProgressView, 0f, 1f, 500);
+        final AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(alpha).with(moveY).with(progAnim);
+        animatorSet.addListener(new Animator.AnimatorListener() {
+            @Override public void onAnimationStart(final Animator animator) {
+                isAnimating = true;
+            }
+
+            @Override public void onAnimationEnd(final Animator animator) {
+                isAnimating = false;
+                isChangelogShowing = true;
+                loadChangelog(event.getUpdateInfo());
+            }
+
+            @Override public void onAnimationCancel(final Animator animator) { }
+
+            @Override public void onAnimationRepeat(final Animator animator) { }
+        });
+        animatorSet.start();
+    }
+
+    private void dismissChangelog(final boolean refresh) {
+        if (isAnimating) return;
+        final AccelerateInterpolator interpolator = new AccelerateInterpolator();
+        final ObjectAnimator moveY = ObjectAnimator.ofFloat(mChangelogContainer, "translationY",
+                0, -mChangelogContainer.getHeight());
+        moveY.setDuration(500);
+        moveY.setInterpolator(interpolator);
+
+        final ObjectAnimator alpha =
+                ObjectAnimator.ofFloat(mChangelogContainer, "alpha", 1f, 0f);
+        alpha.setDuration(500);
+        alpha.setInterpolator(interpolator);
+
+        final AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(alpha).with(moveY);
+        animatorSet.addListener(new Animator.AnimatorListener() {
+            @Override public void onAnimationStart(final Animator animator) {
+                isAnimating = true;
+            }
+
+            @Override public void onAnimationEnd(final Animator animator) {
+                isChangelogShowing = false;
+                isAnimating = false;
+                mChangelog.loadUrl("about:blank");
+                if (refresh) refreshUpdates();
+            }
+
+            @Override public void onAnimationCancel(final Animator animator) { }
+
+            @Override public void onAnimationRepeat(final Animator animator) { }
+        });
+        animatorSet.start();
     }
 
     private final class UpdateCardTask extends AsyncTask<Void, Void, ArrayList<Card>> {
@@ -290,5 +403,64 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
         }
 
         public HashMap<String, Integer> getDownloading() { return mDownloading; }
+    }
+
+    private void loadChangelog(final UpdateInfo updateInfo) {
+        final RomUpdateFragment fragment = this;
+        final File changelog = new File(AppInstance.getFilesDirectory() + "/changelogs"
+                + '/' + updateInfo.getZipName() + ".changelog");
+
+        // Create a new AsyncTask for loading the changelog
+        new AsyncTask<Void, Void, String>() {
+
+            @Override protected String doInBackground(final Void... voids) {
+                // If the changelog exists, load it
+                if (changelog.exists()) {
+                    try {
+                        return FileUtils.readFromFile(changelog);
+                    } catch (Exception exc) {
+                        Logger.e(this, exc.getMessage());
+                    }
+                }
+                return null;
+            }
+
+            @Override protected void onPostExecute(final String s) {
+                // else load it with ion
+                if (s == null || s.isEmpty()) {
+                    Ion.with(fragment)
+                            .load(updateInfo.getUrl().replace("/download", ".changelog/download"))
+                            .asString().setCallback(new FutureCallback<String>() {
+                        @Override public void onCompleted(final Exception e, String result) {
+                            if (e != null) {
+                                loadData(e.getLocalizedMessage());
+                                return;
+                            }
+                            result = result.replace("/css/bootstrap.min.css",
+                                    "file:///android_asset/css/bootstrap.min.css")
+                                    .replace("/js/jquery.min.js",
+                                            "file:///android_asset/js/jquery.min.js")
+                                    .replace("/js/main.js", "file:///android_asset/js/main.js");
+                            try {
+                                FileUtils.writeToFile(changelog, result);
+                            } catch (Exception exc) { Logger.e(this, exc.getMessage()); }
+                            loadData(result);
+                        }
+                    });
+                } else {
+                    loadData(s);
+                }
+            }
+        }.execute();
+    }
+
+    private void loadData(final String data) {
+        if (mChangelog != null && data != null) {
+            // animate the progress out
+            AnimationHelper.alpha(mProgressView, 1f, 0f, 500).start();
+            // and give the webview something to do
+            mChangelog
+                    .loadDataWithBaseURL("file:///android_asset/", data, "text/html", "UTF-8", "");
+        }
     }
 }

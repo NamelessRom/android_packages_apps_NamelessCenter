@@ -19,28 +19,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/card"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:orientation="horizontal"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:paddingRight="10dp"
+    android:gravity="center">
 
-    <Button
-        tools:text="Install"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/rom_updates_expand_top"
+        android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:id="@+id/rom_update_expand_button_left"
-        android:textSize="20sp"
-        android:layout_weight="1" />
+        android:orientation="horizontal">
 
-    <View style="@style/ButtonBarDivider" />
+        <Button
+            tools:text="Install"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:id="@+id/rom_update_expand_button_top_left"
+            android:textSize="20sp"
+            android:layout_weight="1" />
 
-    <Button
-        tools:text="Delete"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="0dp"
+        <View style="@style/ButtonBarDivider" />
+
+        <Button
+            tools:text="Delete"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:id="@+id/rom_update_expand_button_top_right"
+            android:textSize="20sp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <View style="@style/StandardDivider" />
+
+    <LinearLayout
+        android:id="@+id/rom_updates_expand_bottom"
+        android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:id="@+id/rom_update_expand_button_right"
-        android:textSize="20sp"
-        android:layout_weight="1" />
+        android:orientation="horizontal">
+
+        <Button
+            tools:text="Install"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:id="@+id/rom_update_expand_button_left"
+            android:textSize="20sp"
+            android:layout_weight="1" />
+
+        <View style="@style/ButtonBarDivider" />
+
+        <Button
+            tools:text="Delete"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:id="@+id/rom_update_expand_button_right"
+            android:textSize="20sp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 </LinearLayout>

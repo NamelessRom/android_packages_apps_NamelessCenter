@@ -30,15 +30,18 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.namelessrom.center.AppInstance;
 import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
+import org.namelessrom.center.events.ChangelogEvent;
 import org.namelessrom.center.items.UpdateInfo;
 import org.namelessrom.center.receivers.UpdateCheckReceiver;
 import org.namelessrom.center.services.DownloadService;
+import org.namelessrom.center.utils.BusProvider;
 import org.namelessrom.center.utils.DebugHelper;
 import org.namelessrom.center.utils.DrawableHelper;
 import org.namelessrom.center.utils.Helper;
@@ -209,30 +212,49 @@ public class RomUpdateCard extends Card {
         public void setupInnerViewElements(final ViewGroup parent, final View view) {
             if (view == null) return;
 
+            final LinearLayout topContainer = findById(view, R.id.rom_updates_expand_top);
+            // XXX: top_left is unused currently
+            final Button top_left = findById(view, R.id.rom_update_expand_button_top_left);
+            final Button top_right = findById(view, R.id.rom_update_expand_button_top_right);
+
             final Button left = findById(view, R.id.rom_update_expand_button_left);
             final Button right = findById(view, R.id.rom_update_expand_button_right);
 
             if (updateInfo.isDownloading()) {
-                left.setVisibility(View.INVISIBLE);
+                topContainer.setVisibility(View.GONE);
+
+                left.setVisibility(View.VISIBLE);
+                left.setText(R.string.changelog);
                 right.setVisibility(View.VISIBLE);
                 right.setText(android.R.string.cancel);
+
                 if (updateCard.getDownloadProgress() != null) {
                     updateCard.getDownloadProgress().setVisibility(View.VISIBLE);
                 }
                 updateCard.setState(AppInstance.getStr(R.string.downloading));
             } else if (updateInfo.isDownloaded()) {
+                top_left.setVisibility(View.INVISIBLE);
+                top_right.setVisibility(View.VISIBLE);
+                top_right.setText(R.string.changelog);
+                topContainer.setVisibility(View.VISIBLE);
+
                 left.setVisibility(View.VISIBLE);
                 left.setText(R.string.delete_update);
                 right.setVisibility(View.VISIBLE);
                 right.setText(R.string.install);
+
                 if (updateCard.getDownloadProgress() != null) {
                     updateCard.getDownloadProgress().setVisibility(View.INVISIBLE);
                 }
                 updateCard.setState(AppInstance.getStr(R.string.downloaded));
             } else {
-                left.setVisibility(View.INVISIBLE);
+                topContainer.setVisibility(View.GONE);
+
+                left.setVisibility(View.VISIBLE);
+                left.setText(R.string.changelog);
                 right.setVisibility(View.VISIBLE);
                 right.setText(R.string.download);
+
                 if (updateCard.getDownloadProgress() != null) {
                     updateCard.getDownloadProgress().setVisibility(View.INVISIBLE);
                 }
@@ -243,9 +265,19 @@ public class RomUpdateCard extends Card {
                 }
             }
 
+            top_right.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View view) {
+                    BusProvider.getBus().post(new ChangelogEvent(updateInfo));
+                }
+            });
+
             left.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    UpdateHelper.getDeleteDialog(getContext(), updateInfo).show();
+                    if (!updateInfo.isDownloading() && updateInfo.isDownloaded()) {
+                        UpdateHelper.getDeleteDialog(getContext(), updateInfo).show();
+                    } else {
+                        BusProvider.getBus().post(new ChangelogEvent(updateInfo));
+                    }
                 }
             });
 
