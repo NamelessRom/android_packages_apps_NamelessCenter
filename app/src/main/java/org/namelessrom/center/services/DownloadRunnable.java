@@ -29,14 +29,18 @@ import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.future.ResponseFuture;
 
 import org.namelessrom.center.AppInstance;
+import org.namelessrom.center.Constants;
 import org.namelessrom.center.Logger;
 import org.namelessrom.center.MainActivity;
 import org.namelessrom.center.R;
 import org.namelessrom.center.database.UpdateTable;
+import org.namelessrom.center.events.DownloadErrorEvent;
 import org.namelessrom.center.events.DownloadProgressEvent;
 import org.namelessrom.center.items.UpdateInfo;
 import org.namelessrom.center.receivers.UpdateCheckReceiver;
 import org.namelessrom.center.utils.BusProvider;
+import org.namelessrom.center.utils.Helper;
+import org.namelessrom.center.utils.PreferenceHelper;
 import org.namelessrom.center.utils.UpdateHelper;
 
 import java.io.File;
@@ -46,7 +50,8 @@ import java.security.SecureRandom;
  * A runnable for downloading rom updates
  */
 public class DownloadRunnable implements Runnable, ProgressCallback {
-    public static final int RESULT_OK = 0;
+    public static final int RESULT_OK    = 0;
+    public static final int RESULT_ERROR = 1;
 
     public Thread               mThread;
     public ResponseFuture<File> fileResponseFuture;
@@ -94,7 +99,7 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
             final int result = enqueueDownload(updateInfo);
 
             if (result == RESULT_OK) {
-                post(0);
+                postProgress(0);
                 downloadService.updateNotification(NOTIFICATION_ID, notificationBuilder.build());
                 try {
                     fileResponseFuture.setCallback(new FutureCallback<File>() {
@@ -135,7 +140,7 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
                     Logger.e(this, exc.getMessage());
                 } finally {
                     // Tell we are done
-                    post(101);
+                    postProgress(101);
                 }
             } else {
                 notificationBuilder
@@ -150,15 +155,44 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
     }
 
     private int enqueueDownload(final UpdateInfo updateInfo) {
+        // Check if we are online...
+        if (!Helper.isOnline()) {
+            postError(DownloadErrorEvent.REASON_OFFLINE);
+            return RESULT_ERROR;
+        }
+        // Check if we are metered
+        if (Helper.isMetered()) {
+            boolean metered = !PreferenceHelper.getBoolean(Constants.PREF_UPDATE_METERED, true);
+            // Post error if the user has forbidden it
+            if (metered) {
+                postError(DownloadErrorEvent.REASON_METERED);
+                return RESULT_ERROR;
+            } else {
+                metered = !PreferenceHelper.getBoolean(
+                        Constants.PREF_UPDATE_METERED_SKIP_WARNING, false);
+
+                if (metered) {
+                    // User is not skipping warnings, lets tell him that something is fishy
+                    postError(DownloadErrorEvent.REASON_METERED_WARN);
+                }
+            }
+        }
+        // Check if we roam
+        if (Helper.isRoaming()) {
+            final boolean roaming = !PreferenceHelper.getBoolean(
+                    Constants.PREF_UPDATE_ROAMING, false);
+            if (roaming) {
+                // we are roaming and user does not want it, jump out of here, FAST!!!
+                postError(DownloadErrorEvent.REASON_ROAMING);
+                return RESULT_ERROR;
+            }
+        }
         fileResponseFuture = Ion.with(downloadService)
                 .load(updateInfo.getUrl())
                 .progress(this)
                 .write(UpdateHelper.getUpdateFile(updateInfo.getZipName()));
 
-        //request.setAllowedOverMetered(prefs.getBoolean(Constants.PREF_UPDATE_METERED, true));
-        //request.setAllowedOverRoaming(prefs.getBoolean(Constants.PREF_UPDATE_ROAMING, false));
-
-        return RESULT_OK; // return type depening on restictions above
+        return RESULT_OK;
     }
 
     private int oldPercentage = -1;
@@ -171,14 +205,22 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
             notificationBuilder.setProgress(100, percentage, false);
             downloadService.updateNotification(NOTIFICATION_ID, notificationBuilder.build());
 
-            post(percentage);
+            postProgress(percentage);
         }
     }
 
-    private void post(final int percentage) {
+    private void postProgress(final int percentage) {
         AppInstance.getHandler().post(new Runnable() {
             @Override public void run() {
                 BusProvider.getBus().post(new DownloadProgressEvent(id, percentage));
+            }
+        });
+    }
+
+    private void postError(final int reason) {
+        AppInstance.getHandler().post(new Runnable() {
+            @Override public void run() {
+                BusProvider.getBus().post(new DownloadErrorEvent(reason));
             }
         });
     }
