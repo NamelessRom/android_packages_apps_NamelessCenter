@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -173,9 +172,6 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener 
 
         // add our "master card"
         final SimpleCard card = new SimpleCard(getActivity());
-        card.setTitle(String.format("Hey, i am card #0"));
-        card.setBody(String.format("SystemClock.elapsedRealtime(): %s",
-                SystemClock.elapsedRealtime()));
         card.setOnSwipeListener(this);
         mCardArrayAdapter.insert(card, 0);
 

@@ -21,7 +21,6 @@ import static butterknife.ButterKnife.findById;
 public class SimpleCard extends Card {
 
     private String mTitle;
-    private String mBody;
 
     public SimpleCard(final Context context) {
         this(context, R.layout.card_simple_message_inner_content);
@@ -35,10 +34,6 @@ public class SimpleCard extends Card {
         );
         setSwipeable(true);
     }
-
-    public void setBody(final String body) { mBody = body; }
-
-    public String getBody() { return mBody; }
 
     @Override
     public void setupInnerViewElements(final ViewGroup parent, final View view) {
