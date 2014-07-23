@@ -24,10 +24,8 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -93,21 +91,19 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
 
     @Override public void onResume() {
         super.onResume();
-        BusProvider.getBus().register(this);
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(UpdateCheckService.ACTION_CHECK_FINISHED);
-        AppInstance.applicationContext.registerReceiver(updateCheckReceiver, intentFilter);
 
         // update cards
-        refreshUpdates();
+        mCardArrayAdapter.notifyDataSetChanged();
     }
 
-    @Override public void onPause() {
-        super.onPause();
+    @Override public void onStart() {
+        super.onStart();
+        BusProvider.getBus().register(this);
+    }
+
+    @Override public void onStop() {
+        super.onStop();
         BusProvider.getBus().unregister(this);
-        try {
-            AppInstance.applicationContext.unregisterReceiver(updateCheckReceiver);
-        } catch (final Exception ignored) { }
     }
 
     @Override public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -143,6 +139,9 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
                 mChangelogContainer.setY(-mChangelogContainer.getHeight());
             }
         });
+
+        // load updates
+        refreshUpdates();
     }
 
     @Override public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
@@ -298,6 +297,11 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
     private final class UpdateCardTask extends AsyncTask<Void, Void, ArrayList<Card>> {
         private final ArrayList<UpdateInfo> updates;
 
+        /**
+         * Pass in the updates, can also be null if an error occurred or none are existing
+         *
+         * @param updates
+         */
         public UpdateCardTask(final ArrayList<UpdateInfo> updates) { this.updates = updates; }
 
         @Override protected ArrayList<Card> doInBackground(final Void... params) {
@@ -346,19 +350,6 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
         }
     }
 
-    private final BroadcastReceiver updateCheckReceiver = new BroadcastReceiver() {
-        @Override public void onReceive(final Context context, final Intent intent) {
-            if (intent == null || TextUtils.isEmpty(intent.getAction())) return;
-            final String action = intent.getAction();
-
-            if (UpdateCheckService.ACTION_CHECK_FINISHED.equals(action)) {
-                if (!intent.getBooleanExtra("success", false)) return;
-                final ArrayList<UpdateInfo> updates = intent.getParcelableArrayListExtra("updates");
-                new UpdateCardTask(updates).execute();
-            }
-        }
-    };
-
     @Subscribe public void onDownloadProgressEvent(final DownloadProgressEvent event) {
         if (event == null) return;
 
@@ -374,6 +365,10 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
         UpdateHelper.getDownloadErrorDialog(getActivity(), event.getReason()).show();
 
         mCardArrayAdapter.notifyDataSetChanged();
+    }
+
+    @Subscribe public void onUpdateCheckDoneEvent(final ArrayList<UpdateInfo> updates) {
+        new UpdateCardTask(updates).execute();
     }
 
     private class RomUpdateCardArrayAdapter extends CardArrayAdapter {
