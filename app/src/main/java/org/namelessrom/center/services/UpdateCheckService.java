@@ -25,7 +25,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -40,6 +39,7 @@ import org.namelessrom.center.MainActivity;
 import org.namelessrom.center.R;
 import org.namelessrom.center.items.UpdateInfo;
 import org.namelessrom.center.receivers.UpdateCheckReceiver;
+import org.namelessrom.center.utils.BusProvider;
 import org.namelessrom.center.utils.Helper;
 import org.namelessrom.center.utils.PreferenceHelper;
 import org.namelessrom.center.utils.UpdateHelper;
@@ -49,17 +49,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-
 public class UpdateCheckService extends Service {
 
     // request actions
     public static final String ACTION_CHECK        = "org.namelessrom.center.action.CHECK";
     public static final String ACTION_CHECK_UI     = "org.namelessrom.center.action.CHECK_UI";
     public static final String ACTION_CANCEL_CHECK = "org.namelessrom.center.action.CANCEL_CHECK";
-
-    // broadcast actions
-    public static final String ACTION_CHECK_FINISHED =
-            "org.namelessrom.center.action.UPDATE_CHECK_FINISHED";
 
     // max. number of updates listed in the expanded notification
     private static final int EXPANDED_NOTIF_UPDATE_COUNT = 4;
@@ -76,7 +71,7 @@ public class UpdateCheckService extends Service {
 
         if (TextUtils.equals(mAction, ACTION_CANCEL_CHECK) || !Helper.isOnline()) {
             // Only check for updates if the device is actually connected to a network
-            postBus(null, false);
+            postBus(null);
             return START_NOT_STICKY;
         }
 
@@ -119,7 +114,8 @@ public class UpdateCheckService extends Service {
         @Override
         public void onCompleted(Exception e, UpdateInfo[] result) {
             if (result == null || e != null) {
-                postBus(null, false);
+                // post back null, the receiver can handle null
+                postBus(null);
                 return;
             }
 
@@ -145,7 +141,8 @@ public class UpdateCheckService extends Service {
             sendBroadcast(updateIntent);*/
 
             if (ACTION_CHECK_UI.equals(mAction)) {
-                postBus(updates, true);
+                // post back the result, do not build notifications
+                postBus(updates);
                 return;
             }
 
@@ -224,18 +221,13 @@ public class UpdateCheckService extends Service {
                 nm.notify(R.string.new_updates_found_title, builder.build());
             }
 
-            postBus(updates, true);
+            // post back the result
+            postBus(updates);
         }
     };
 
-    private void postBus(final ArrayList<UpdateInfo> updates, final boolean success) {
-        final Intent i = new Intent(ACTION_CHECK_FINISHED);
-        final Bundle b = new Bundle(2);
-        b.putBoolean("success", success);
-        b.putParcelableArrayList("updates", updates);
-        i.putExtras(b);
-        // TODO: permission protection
-        sendBroadcast(i);
+    private void postBus(final ArrayList<UpdateInfo> updates) {
+        BusProvider.getBus().post(updates);
         stopSelf();
     }
 }
