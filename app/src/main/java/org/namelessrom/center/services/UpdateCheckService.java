@@ -227,7 +227,7 @@ public class UpdateCheckService extends Service {
     };
 
     private void postBus(final ArrayList<UpdateInfo> updates) {
-        BusProvider.getBus().post(updates);
+        BusProvider.getBus().post(updates == null ? new ArrayList<UpdateInfo>(0) : updates);
         stopSelf();
     }
 }
