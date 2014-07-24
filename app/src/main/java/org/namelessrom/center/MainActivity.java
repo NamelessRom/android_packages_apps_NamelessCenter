@@ -28,17 +28,16 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
 
 import org.namelessrom.center.database.DatabaseHandler;
+import org.namelessrom.center.fragments.HomeFragment;
 import org.namelessrom.center.fragments.updates.RomUpdateFragment;
 import org.namelessrom.center.interfaces.OnBackPressedListener;
 import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
@@ -104,16 +103,16 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
     }
 
     private Fragment processIntent(final Intent intent) {
-        if (intent == null || intent.getAction() == null) return new PlaceholderFragment();
+        if (intent == null || intent.getAction() == null) return new HomeFragment();
 
         final String action = intent.getAction();
-        if (action.isEmpty()) return new PlaceholderFragment();
+        if (action.isEmpty()) return new HomeFragment();
 
         if (ACTION_UPDATES.equals(action)) {
             return new RomUpdateFragment();
         }
 
-        return new PlaceholderFragment();
+        return new HomeFragment();
     }
 
     private void setupActionBar() {
@@ -175,7 +174,7 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
                 switch (id) {
                     default:
                     case Constants.MENU_ID_HOME:
-                        mCurrentFragment = new PlaceholderFragment();
+                        mCurrentFragment = new HomeFragment();
                         break;
                     case Constants.MENU_ID_UPDATES:
                         mCurrentFragment = new RomUpdateFragment();
@@ -248,31 +247,4 @@ public class MainActivity extends Activity implements OnFragmentLoadedListener,
         if (mResideMenu.isOpened()) mResideMenu.closeMenu();
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() { }
-
-        @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            rootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
-                }
-            });
-            return rootView;
-        }
-
-        @Override public void onViewCreated(View view, Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-            final Activity activity = getActivity();
-            if (activity != null && activity instanceof OnFragmentLoadedListener) {
-                ((OnFragmentLoadedListener) activity).onFragmentLoaded();
-            }
-        }
-    }
 }
