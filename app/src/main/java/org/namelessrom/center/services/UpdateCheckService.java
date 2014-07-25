@@ -39,6 +39,7 @@ import org.namelessrom.center.MainActivity;
 import org.namelessrom.center.R;
 import org.namelessrom.center.items.UpdateInfo;
 import org.namelessrom.center.receivers.UpdateCheckReceiver;
+import org.namelessrom.center.services.dashclock.RomUpdateDashclockExtension;
 import org.namelessrom.center.utils.BusProvider;
 import org.namelessrom.center.utils.Helper;
 import org.namelessrom.center.utils.PreferenceHelper;
@@ -134,11 +135,11 @@ public class UpdateCheckService extends Service {
                 }
             }
 
-            /*final Intent updateIntent =
+            final Intent updateIntent =
                     new Intent(RomUpdateDashclockExtension.ACTION_DATA_UPDATE);
             updateIntent.putParcelableArrayListExtra(RomUpdateDashclockExtension.EXTRA_UPDATES,
                     updates);
-            sendBroadcast(updateIntent);*/
+            sendBroadcast(updateIntent);
 
             if (ACTION_CHECK_UI.equals(mAction)) {
                 // post back the result, do not build notifications

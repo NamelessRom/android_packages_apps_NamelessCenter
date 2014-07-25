@@ -71,4 +71,8 @@
     <string name="error_metered">The device is using a metered connection, aborting.</string>
     <string name="error_roaming">The device uses roaming, aborting.</string>
     <string name="warning_metered">The device is using a metered connection!</string>
+
+    <!-- DashClock extension strings -->
+    <string name="extension_label">NamelessRom Updates</string>
+    <string name="extension_description">Displays number of new rom updates available.</string>
 </resources>

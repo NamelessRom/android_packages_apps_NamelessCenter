@@ -82,9 +82,33 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".receivers.DashclockUpdateReceiver">
+            <intent-filter>
+                <action android:name="org.namelessrom.center.action.DASHCLOCK_ROM_UPDATE" />
+            </intent-filter>
+        </receiver>
 
         <service android:name=".services.DownloadService" />
         <service android:name=".services.UpdateCheckService" />
+        <service
+            android:name=".services.dashclock.RomUpdateDashclockExtension"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/extension_label"
+            android:permission="com.google.android.apps.dashclock.permission.READ_EXTENSION_DATA">
+            <intent-filter>
+                <action android:name="com.google.android.apps.dashclock.Extension" />
+            </intent-filter>
+
+            <meta-data
+                android:name="protocolVersion"
+                android:value="2" />
+            <meta-data
+                android:name="worldReadable"
+                android:value="true" />
+            <meta-data
+                android:name="description"
+                android:value="@string/extension_description" />
+        </service>
     </application>
 
 </manifest>
