@@ -25,6 +25,8 @@ import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.koushikdutta.ion.Ion;
+
 import org.namelessrom.center.utils.DebugHelper;
 import org.namelessrom.center.utils.Helper;
 import org.namelessrom.center.utils.PreferenceHelper;
@@ -45,6 +47,8 @@ public class AppInstance extends Application {
         super.onCreate();
 
         applicationContext = getApplicationContext();
+        Ion.getDefault(AppInstance.applicationContext)
+                .configure().getResponseCache().setCaching(false);
 
         DebugHelper.setEnabled(Helper.isNamelessDebug());
         Logger.setEnabled(PreferenceHelper.getBoolean(PreferenceHelper.DEBUG, false));
