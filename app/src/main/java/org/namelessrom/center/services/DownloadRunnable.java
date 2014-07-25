@@ -89,7 +89,11 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
                 .setAutoCancel(false);
 
         Logger.v(this, "Starting download, id: " + this.id);
-        startup();
+        AppInstance.getHandler().post(new Runnable() {
+            @Override public void run() {
+                startup();
+            }
+        });
     }
 
     public void startup() {
@@ -224,20 +228,20 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
         AppInstance.getHandler().post(new Runnable() {
             @Override public void run() {
                 BusProvider.getBus().post(new DownloadProgressEvent(id, percentage));
+                if (percentage == 101) {
+                    tearDown();
+                }
             }
         });
-        if (percentage == 101) {
-            tearDown();
-        }
     }
 
     private void postError(final int reason) {
         AppInstance.getHandler().post(new Runnable() {
             @Override public void run() {
                 BusProvider.getBus().post(new DownloadErrorEvent(reason));
+                tearDown();
             }
         });
-        tearDown();
     }
 
     @Produce public DownloadProgressEvent produceDownloadProgressEvent() {
