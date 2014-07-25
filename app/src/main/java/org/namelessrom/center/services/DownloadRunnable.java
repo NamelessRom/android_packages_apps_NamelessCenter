@@ -27,6 +27,7 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.future.ResponseFuture;
+import com.squareup.otto.Produce;
 
 import org.namelessrom.center.AppInstance;
 import org.namelessrom.center.Constants;
@@ -88,6 +89,15 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
                 .setAutoCancel(false);
 
         Logger.v(this, "Starting download, id: " + this.id);
+        startup();
+    }
+
+    public void startup() {
+        BusProvider.getBus().register(this);
+    }
+
+    public void tearDown() {
+        BusProvider.getBus().unregister(this);
     }
 
     @Override public void run() {
@@ -195,17 +205,18 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
         return RESULT_OK;
     }
 
-    private int oldPercentage = -1;
+    private int actualPercentage = 0;
+    private int oldPercentage    = -1;
 
     @Override public void onProgress(final long downloaded, final long total) {
-        final int percentage = (int) (downloaded * 100.0 / total + 0.5);
-        if (downloadService != null && oldPercentage != percentage) {
+        actualPercentage = (int) (downloaded * 100.0 / total + 0.5);
+        if (downloadService != null && oldPercentage != actualPercentage) {
             Logger.v(this, "updating");
-            oldPercentage = percentage;
-            notificationBuilder.setProgress(100, percentage, false);
+            oldPercentage = actualPercentage;
+            notificationBuilder.setProgress(100, actualPercentage, false);
             downloadService.updateNotification(NOTIFICATION_ID, notificationBuilder.build());
 
-            postProgress(percentage);
+            postProgress(actualPercentage);
         }
     }
 
@@ -215,6 +226,9 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
                 BusProvider.getBus().post(new DownloadProgressEvent(id, percentage));
             }
         });
+        if (percentage == 101) {
+            tearDown();
+        }
     }
 
     private void postError(final int reason) {
@@ -223,6 +237,12 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
                 BusProvider.getBus().post(new DownloadErrorEvent(reason));
             }
         });
+        tearDown();
+    }
+
+    @Produce public DownloadProgressEvent produceDownloadProgressEvent() {
+        Logger.d(this, String.format("producing new event: %s -> %s", id, actualPercentage));
+        return new DownloadProgressEvent(id, actualPercentage);
     }
 
     private void showError() {
