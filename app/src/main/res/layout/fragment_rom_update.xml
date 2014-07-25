@@ -32,7 +32,8 @@
     <FrameLayout
         android:id="@+id/rom_updates_changelog_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="@dimen/changelog_padding">
 
         <WebView
             android:id="@+id/rom_updates_changelog"

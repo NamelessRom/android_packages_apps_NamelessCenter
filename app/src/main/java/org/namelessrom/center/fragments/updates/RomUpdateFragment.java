@@ -136,7 +136,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
         // move the changelog container out of view
         mChangelogContainer.post(new Runnable() {
             @Override public void run() {
-                mChangelogContainer.setY(-mChangelogContainer.getHeight());
+                mChangelogContainer.setY(-getChangelogHeight());
             }
         });
 
@@ -231,7 +231,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
         // Move in the changelog and progressview
         final DecelerateInterpolator interpolator = new DecelerateInterpolator();
         final ObjectAnimator moveY = ObjectAnimator.ofFloat(mChangelogContainer, "translationY",
-                -mChangelogContainer.getHeight(), 0);
+                -getChangelogHeight(), 0);
         moveY.setDuration(500);
         moveY.setInterpolator(interpolator);
 
@@ -264,7 +264,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
         if (isAnimating) return;
         final AccelerateInterpolator interpolator = new AccelerateInterpolator();
         final ObjectAnimator moveY = ObjectAnimator.ofFloat(mChangelogContainer, "translationY",
-                0, -mChangelogContainer.getHeight());
+                0, -getChangelogHeight());
         moveY.setDuration(500);
         moveY.setInterpolator(interpolator);
 
@@ -276,9 +276,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
         final AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(alpha).with(moveY);
         animatorSet.addListener(new Animator.AnimatorListener() {
-            @Override public void onAnimationStart(final Animator animator) {
-                isAnimating = true;
-            }
+            @Override public void onAnimationStart(final Animator animator) { isAnimating = true; }
 
             @Override public void onAnimationEnd(final Animator animator) {
                 isChangelogShowing = false;
@@ -292,6 +290,12 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
             @Override public void onAnimationRepeat(final Animator animator) { }
         });
         animatorSet.start();
+    }
+
+    private int getChangelogHeight() {
+        return mChangelogContainer.getHeight()
+                // top and bottom padding
+                + (2 * getResources().getDimensionPixelSize(R.dimen.changelog_padding));
     }
 
     private final class UpdateCardTask extends AsyncTask<Void, Void, ArrayList<Card>> {
