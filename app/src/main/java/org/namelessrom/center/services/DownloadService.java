@@ -31,6 +31,7 @@ import android.text.TextUtils;
 import org.namelessrom.center.AppInstance;
 import org.namelessrom.center.Logger;
 import org.namelessrom.center.cards.RomUpdateCard;
+import org.namelessrom.center.events.DownloadErrorEvent;
 import org.namelessrom.center.events.DownloadProgressEvent;
 import org.namelessrom.center.items.UpdateInfo;
 import org.namelessrom.center.utils.BusProvider;
@@ -71,6 +72,11 @@ public class DownloadService extends Service {
         AppInstance.applicationContext.startService(i);
     }
 
+    @Override public void onDestroy() {
+        tearDown();
+        super.onDestroy();
+    }
+
     @Override public IBinder onBind(final Intent intent) { return null; }
 
     @Override public int onStartCommand(final Intent intent, final int flags, final int startId) {
@@ -90,7 +96,16 @@ public class DownloadService extends Service {
                 final UpdateInfo info = intent.getParcelableExtra(EXTRA_INFO);
                 final DownloadRunnable runnable = new DownloadRunnable(this, id, info);
                 mRunnables.add(runnable);
-                getThreadPoolExecutor().execute(runnable);
+                try {
+                    getThreadPoolExecutor().execute(runnable);
+                } catch (Exception exc) {
+                    AppInstance.getHandler().post(new Runnable() {
+                        @Override public void run() {
+                            BusProvider.getBus().post(
+                                    new DownloadErrorEvent(DownloadErrorEvent.REASON_UNKNOWN));
+                        }
+                    });
+                }
             }
         }
         return START_STICKY;
