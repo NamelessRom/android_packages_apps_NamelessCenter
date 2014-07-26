@@ -357,8 +357,11 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
     @Subscribe public void onDownloadProgressEvent(final DownloadProgressEvent event) {
         if (event == null) return;
 
-        mCardArrayAdapter.getDownloading().remove(event.getId());
-        mCardArrayAdapter.getDownloading().put(event.getId(), event.getPercentage());
+        // just update if we get a dummy, do not add it to the hashmap
+        if (!TextUtils.equals(event.getId(), "-1")) {
+            mCardArrayAdapter.getDownloading().remove(event.getId());
+            mCardArrayAdapter.getDownloading().put(event.getId(), event.getPercentage());
+        }
 
         mCardArrayAdapter.notifyDataSetChanged();
     }

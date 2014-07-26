@@ -28,9 +28,10 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.squareup.otto.Produce;
+
 import org.namelessrom.center.AppInstance;
 import org.namelessrom.center.Logger;
-import org.namelessrom.center.cards.RomUpdateCard;
 import org.namelessrom.center.events.DownloadErrorEvent;
 import org.namelessrom.center.events.DownloadProgressEvent;
 import org.namelessrom.center.items.UpdateInfo;
@@ -59,6 +60,8 @@ public class DownloadService extends Service {
 
     private static NotificationManager notificationManager = null;
 
+    private static boolean isRegistered = false;
+
     public static synchronized void start(final UpdateInfo updateInfo) {
         final Intent i = new Intent(AppInstance.applicationContext, DownloadService.class);
         i.putExtra(EXTRA_ID, updateInfo.getTimestamp());
@@ -73,7 +76,11 @@ public class DownloadService extends Service {
     }
 
     @Override public void onDestroy() {
-        tearDown();
+        AppInstance.getHandler().post(new Runnable() {
+            @Override public void run() {
+                tearDown();
+            }
+        });
         super.onDestroy();
     }
 
@@ -81,14 +88,30 @@ public class DownloadService extends Service {
 
     @Override public int onStartCommand(final Intent intent, final int flags, final int startId) {
         if (intent == null && mWorkQueue.size() <= 0) {
-            tearDown();
+            AppInstance.getHandler().post(new Runnable() {
+                @Override public void run() {
+                    tearDown();
+                }
+            });
             return START_NOT_STICKY;
         }
         if (intent != null) {
             final String action = intent.getAction();
             if (TextUtils.equals(action, ACTION_STOP)) {
-                tearDown();
+                AppInstance.getHandler().post(new Runnable() {
+                    @Override public void run() {
+                        tearDown();
+                    }
+                });
                 return START_NOT_STICKY;
+            }
+
+            if (!isRegistered) {
+                AppInstance.getHandler().post(new Runnable() {
+                    @Override public void run() {
+                        startup();
+                    }
+                });
             }
 
             final String id = intent.getStringExtra(EXTRA_ID);
@@ -111,10 +134,34 @@ public class DownloadService extends Service {
         return START_STICKY;
     }
 
+    @Produce public DownloadProgressEvent produceDownloadProgressEvent() {
+        // we listen if the update fragment attaches and tell the runnables to update
+        AppInstance.getHandler().post(new Runnable() {
+            @Override public void run() {
+                BusProvider.getBus().post(new DownloadRunnable.RefreshDownloadRunnablesEvent());
+            }
+        });
+
+        // return a dummy as we just want the above to be send
+        return new DownloadProgressEvent("-1", 0);
+    }
+
+    public void startup() {
+        // register
+        BusProvider.getBus().register(this);
+        isRegistered = true;
+    }
+
     private void tearDown() {
         cancelDownload("");
         final List<Runnable> canceledRunnables = getThreadPoolExecutor().shutdownNow();
         Logger.v(this, String.format("canceled %s tasks", canceledRunnables.size()));
+
+        // unregister
+        try {
+            BusProvider.getBus().unregister(this);
+        } catch (Exception ignored) { }
+        isRegistered = false;
     }
 
     public static synchronized ThreadPoolExecutor getThreadPoolExecutor() {
@@ -144,19 +191,28 @@ public class DownloadService extends Service {
         Logger.v(DownloadService.class, "canceling id: " + id);
         final DownloadRunnable[] runnableArray = new DownloadRunnable[mWorkQueue.size()];
         mWorkQueue.toArray(runnableArray);
-        final int len = runnableArray.length;
+        int len;
 
         synchronized (LOCK) {
-            for (final DownloadRunnable downloadRunnable : mRunnables) {
+            len = mRunnables.size();
+            DownloadRunnable downloadRunnable;
+            for (int i = 0; i < len; i++) { // do not use foreach to prevent ConcurrentModification
+                try {
+                    downloadRunnable = mRunnables.get(i);
+                } catch (Exception exc) {
+                    Logger.e(DownloadService.class, exc.getMessage());
+                    continue;
+                }
                 if (TextUtils.isEmpty(id) || TextUtils.equals(downloadRunnable.getId(), id)) {
                     downloadRunnable.fileResponseFuture.cancel(true);
                     try {
                         downloadRunnable.mThread.interrupt();
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {}
                     mRunnables.remove(downloadRunnable);
                 }
             }
 
+            len = runnableArray.length;
             Thread thread;
             for (int i = 0; i < len; i++) {
                 thread = runnableArray[i].mThread;
@@ -168,7 +224,7 @@ public class DownloadService extends Service {
                         thread.interrupt();
                         mWorkQueue.remove(runnableArray[i]);
                         getThreadPoolExecutor().remove(runnableArray[i]);
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {}
                 }
             }
             getThreadPoolExecutor().purge();

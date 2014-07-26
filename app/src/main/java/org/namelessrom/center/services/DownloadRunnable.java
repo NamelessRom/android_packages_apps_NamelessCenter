@@ -27,7 +27,7 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.future.ResponseFuture;
-import com.squareup.otto.Produce;
+import com.squareup.otto.Subscribe;
 
 import org.namelessrom.center.AppInstance;
 import org.namelessrom.center.Constants;
@@ -244,9 +244,9 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
         });
     }
 
-    @Produce public DownloadProgressEvent produceDownloadProgressEvent() {
-        Logger.d(this, String.format("producing new event: %s -> %s", id, actualPercentage));
-        return new DownloadProgressEvent(id, actualPercentage);
+    // Refresh progress if we get the event
+    @Subscribe public void onRefreshDownloadRunnablesEvent(final RefreshDownloadRunnablesEvent ev) {
+        postProgress(actualPercentage);
     }
 
     private void showError() {
@@ -261,4 +261,6 @@ public class DownloadRunnable implements Runnable, ProgressCallback {
     }
 
     public String getId() { return this.id; }
+
+    public static final class RefreshDownloadRunnablesEvent {}
 }
