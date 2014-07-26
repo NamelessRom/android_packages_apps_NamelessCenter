@@ -107,7 +107,7 @@ public class HomeFragment extends Fragment implements OnBackPressedListener {
         // our blog uses javascript
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
     }
 
     @Override public boolean onBackPressed() {
