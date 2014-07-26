@@ -148,8 +148,10 @@ public class DownloadService extends Service {
 
     public void startup() {
         // register
-        BusProvider.getBus().register(this);
-        isRegistered = true;
+        if (!isRegistered) {
+            BusProvider.getBus().register(this);
+            isRegistered = true;
+        }
     }
 
     private void tearDown() {
@@ -158,10 +160,12 @@ public class DownloadService extends Service {
         Logger.v(this, String.format("canceled %s tasks", canceledRunnables.size()));
 
         // unregister
-        try {
-            BusProvider.getBus().unregister(this);
-        } catch (Exception ignored) { }
-        isRegistered = false;
+        if (isRegistered) {
+            try {
+                BusProvider.getBus().unregister(this);
+            } catch (Exception ignored) { }
+            isRegistered = false;
+        }
     }
 
     public static synchronized ThreadPoolExecutor getThreadPoolExecutor() {
@@ -235,5 +239,9 @@ public class DownloadService extends Service {
                 BusProvider.getBus().post(new DownloadProgressEvent("-1", 0));
             }
         });
+
+        if (mRunnables.size() == 0) {
+            DownloadService.stop();
+        }
     }
 }
