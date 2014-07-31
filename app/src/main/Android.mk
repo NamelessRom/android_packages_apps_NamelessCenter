@@ -39,8 +39,8 @@ LOCAL_REQUIRED_MODULES     := libopendelta
 
 ######
 
-library_src_files += ../../../../../../external/cardslib/library/src/main/java
-LOCAL_SRC_FILES += $(call all-java-files-under, $(library_src_files))
+library_src_files := ../../../../../../external/cardslib/library/src/main/java
+LOCAL_SRC_FILES   += $(call all-java-files-under, $(library_src_files))
 
 LOCAL_RESOURCE_DIR += $(LOCAL_PATH)/../../../../../../external/cardslib/library/src/main/res
 
