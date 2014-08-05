@@ -17,6 +17,27 @@
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
+  <string name="debug_mode">Activar modo debug</string>
+  <string name="debug_mode_summary">Activa el logging adicional y más, útil para debugging</string>
+  <string name="rom_updates">Actualizaciones de la rom</string>
+  <string name="rom_updates_summary">Configurar preferencias sobre las actualizaciones de la rom</string>
+  <string name="general_summary">Configurar preferencias sobre la aplicación en sí misma</string>
+  <string name="update_check_title">Actualizar el intervalo de comprobación</string>
+  <string name="check_manual">Manual</string>
+  <string name="check_on_app_start">Durante el arranque de la aplicación</string>
+  <string name="check_on_boot">En cada arranque</string>
+  <string name="check_twice_daily">Dos veces al día</string>
+  <string name="check_daily">Diariamente</string>
+  <string name="check_weekly">Semanalmente</string>
+  <string name="check_bi_weekly">Cada dos semanas</string>
+  <string name="check_monthly">Mensualmente</string>
+  <string name="update_metered_title">Permitir la conexión de medios</string>
+  <string name="update_metered_summary">Indicar si esta descarga puede proceder de una conexión de medios</string>
+  <string name="update_metered_skip_warn_title">Omitir medidas de advertencia</string>
+  <string name="update_roaming_title">Permitir el uso de la itinerancia de datos</string>
+  <string name="update_roaming_summary">Indicar si esa descarga pueda proceder de la itinerancia de datos</string>
+  <string name="all">Todos</string>
+  <string name="channel_title">Canal de actualización</string>
   <string name="recovery_type_title">Tipo de script para Recovery</string>
   <string name="recovery_type_both">Ambos</string>
 </resources>
