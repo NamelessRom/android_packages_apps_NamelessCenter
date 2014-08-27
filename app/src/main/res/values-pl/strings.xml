@@ -31,7 +31,7 @@
   <string name="install">Instaluj</string>
   <string name="changelog">Dziennik zmian</string>
   <string name="download">Pobierz</string>
-  <string name="delete_update">Usuń aktualizację</string>
+  <string name="delete_update">Usuń</string>
   <string name="delete_update_message">Na na pewno chcesz usunąć %s?</string>
   <string name="downloaded">Pobrano</string>
   <string name="downloading">Pobieranie</string>
