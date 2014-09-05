@@ -26,13 +26,13 @@
   <string name="information">Informacje</string>
   <string name="general">Ogólne</string>
   <string name="unknown">Nieznane</string>
-  <string name="action_press_again">Naciśnij jeszcze raz aby wyjść!</string>
+  <string name="action_press_again">Naciśnij jeszcze raz, aby wyjść!</string>
   <string name="refresh">Odśwież</string>
-  <string name="install">Instaluj</string>
+  <string name="install">Zainstaluj</string>
   <string name="changelog">Dziennik zmian</string>
   <string name="download">Pobierz</string>
-  <string name="delete_update">Usuń aktualizację</string>
-  <string name="delete_update_message">Na na pewno chcesz usunąć %s?</string>
+  <string name="delete_update">Usuń</string>
+  <string name="delete_update_message">Czy na pewno chcesz usunąć \"%s\"?</string>
   <string name="downloaded">Pobrano</string>
   <string name="downloading">Pobieranie</string>
   <string name="installed">Zainstalowane</string>
@@ -51,7 +51,7 @@
   <string name="unable_to_reboot_toast">Przejście w tryb odzyskiwania się nie powiodło</string>
   <string name="installed_version">Zainstalowana wersja</string>
   <string name="swipe_refresh">Przesuń mnie, aby odświeżyć!</string>
-  <string name="size_used">Miejsce użyte na karcie zewnętrznej</string>
+  <string name="size_used">Zużyte miejsce na karcie SD</string>
   <string name="update_check_failed">Nie udało się wyszukać aktualizacji. Proszę sprawdzić połączenie internetowe i spróbować ponownie.</string>
   <string name="new_updates_found_ticker">Nowe aktualizacje są dostępne</string>
   <string name="new_updates_found_title">Nowe aktualizacje</string>
