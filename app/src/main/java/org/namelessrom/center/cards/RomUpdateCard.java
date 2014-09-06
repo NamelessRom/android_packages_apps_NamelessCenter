@@ -246,7 +246,11 @@ public class RomUpdateCard extends Card {
                 if (updateCard.getDownloadProgress() != null) {
                     updateCard.getDownloadProgress().setVisibility(View.INVISIBLE);
                 }
-                updateCard.setState(AppInstance.getStr(R.string.downloaded));
+                if (Helper.parseDate(updateInfo.getTimestamp()) == Helper.getBuildDate()) {
+                    updateCard.setState(AppInstance.getStr(R.string.installed));
+                } else {
+                    updateCard.setState(AppInstance.getStr(R.string.downloaded));
+                }
             } else {
                 topContainer.setVisibility(View.GONE);
 
