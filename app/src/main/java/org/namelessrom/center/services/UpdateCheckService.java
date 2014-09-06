@@ -130,7 +130,7 @@ public class UpdateCheckService extends Service {
                 final String md5sum = info.getMd5();
                 final String urlFile = info.getUrl();
                 final String timeStamp = info.getTimestamp();
-                if (currentDate <= Helper.parseDate(timeStamp) || info.isDownloaded()) {
+                if (currentDate < Helper.parseDate(timeStamp) || info.isDownloaded()) {
                     updates.add(new UpdateInfo(channel, name, md5sum, urlFile, timeStamp));
                 }
             }
