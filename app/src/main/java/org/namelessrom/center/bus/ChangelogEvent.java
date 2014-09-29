@@ -17,7 +17,7 @@
  * -->
  */
 
-package org.namelessrom.center.events;
+package org.namelessrom.center.bus;
 
 import org.namelessrom.center.items.UpdateInfo;
 

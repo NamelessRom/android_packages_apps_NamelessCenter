@@ -1,4 +1,4 @@
-package org.namelessrom.center.events;
+package org.namelessrom.center.bus;
 
 /**
  * An event which refreshes the Update List and updates the card with the same id with the new progress

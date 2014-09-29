@@ -37,10 +37,9 @@ import android.widget.TextView;
 import org.namelessrom.center.AppInstance;
 import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
-import org.namelessrom.center.events.ChangelogEvent;
+import org.namelessrom.center.bus.ChangelogEvent;
 import org.namelessrom.center.items.UpdateInfo;
 import org.namelessrom.center.receivers.UpdateCheckReceiver;
-import org.namelessrom.center.services.DownloadService;
 import org.namelessrom.center.utils.BusProvider;
 import org.namelessrom.center.utils.DebugHelper;
 import org.namelessrom.center.utils.DrawableHelper;
@@ -63,7 +62,7 @@ import static butterknife.ButterKnife.findById;
  */
 public class RomUpdateCard extends Card {
 
-    private UpdateInfo mUpdateInfo;
+    public UpdateInfo updateInfo;
 
     private ProgressBar mDownloadProgress;
     private TextView    mStateTextView;
@@ -74,36 +73,35 @@ public class RomUpdateCard extends Card {
 
     public RomUpdateCard(final Context context, final int innerLayout, final UpdateInfo info) {
         super(context, innerLayout);
-        mUpdateInfo = info;
+        updateInfo = info;
         init();
     }
 
     private void init() {
         // Set the channel as header
         final CardHeader header = new CardHeader(getContext());
-        header.setTitle(mUpdateInfo.getChannel());
+        header.setTitle(updateInfo.getChannel());
         addCardHeader(header);
 
         // Add something eyecandy
         addCardIcon();
 
         // Setup actions which are available when expanding (pressing on) the card
-        final RomUpdateCardExpand cardExpand =
-                new RomUpdateCardExpand(getContext(), mUpdateInfo, this);
+        final RomUpdateCardExpand cardExpand = new RomUpdateCardExpand(getContext());
         addCardExpand(cardExpand);
 
         // Do not allow to swipe it away... yet
         setSwipeable(false);
 
         // Set the timestamp, which is unique, as ID
-        setId(mUpdateInfo.getTimestamp());
+        setId(updateInfo.getTimestamp());
     }
 
     private void addCardIcon() {
         // If we do not have a thumbnail, add one
         if (getCardThumbnail() == null) {
             final CardThumbnail thumbnail = new RomUpdateThumbnail(mContext);
-            thumbnail.setCustomSource(new RomUpdateThumbnailCustomSource(mUpdateInfo));
+            thumbnail.setCustomSource(new RomUpdateThumbnailCustomSource());
             addCardThumbnail(thumbnail);
         }
     }
@@ -123,14 +121,14 @@ public class RomUpdateCard extends Card {
         if (DebugHelper.getEnabled()) {
             final SecureRandom secureRandom = new SecureRandom();
             mDownloadProgress.setProgress(secureRandom.nextInt(100));
-        } else if (mUpdateInfo.isDownloading()) {
+        } else if (updateInfo.isDownloading()) {
             mDownloadProgress.setVisibility(View.VISIBLE);
         } else {
             mDownloadProgress.setVisibility(View.INVISIBLE);
         }
 
-        final String title = mUpdateInfo.getReadableName();
-        final String status = mUpdateInfo.getMd5();
+        final String title = updateInfo.getReadableName();
+        final String status = updateInfo.getMd5();
 
         if (TextUtils.isEmpty(title) && !TextUtils.isEmpty(status)) {
             titleTextView.setText(status);
@@ -152,22 +150,23 @@ public class RomUpdateCard extends Card {
 
     public ProgressBar getDownloadProgress() { return mDownloadProgress; }
 
-    public UpdateInfo getUpdateInfo() { return mUpdateInfo; }
-
     public void setDownloading(final boolean downloading) {
-        this.mUpdateInfo = mUpdateInfo.setDownloading(downloading);
+        this.updateInfo = updateInfo.setDownloading(downloading);
     }
 
     private static class RomUpdateThumbnail extends CardThumbnail {
-        private static int[] sIconBackgroundColors;
+        private static int[] sIconBackgroundColors = null;
 
         private static int sCurrentIconColorIndex = 0;
         private        int mIconColorIndex        = -1;
 
         public RomUpdateThumbnail(final Context context) {
             super(context);
-            sIconBackgroundColors = context.getResources()
-                    .getIntArray(R.array.icon_background_colors);
+
+            if (sIconBackgroundColors == null) {
+                sIconBackgroundColors = context.getResources()
+                        .getIntArray(R.array.icon_background_colors);
+            }
 
             // Assign this card a color, incrementing the static ongoing color index
             if (mIconColorIndex == -1) {
@@ -183,12 +182,9 @@ public class RomUpdateCard extends Card {
         }
     }
 
-    private static class RomUpdateThumbnailCustomSource implements CardThumbnail.CustomSource {
-        private final UpdateInfo updateInfo;
+    private class RomUpdateThumbnailCustomSource implements CardThumbnail.CustomSource {
 
-        public RomUpdateThumbnailCustomSource(final UpdateInfo updateInfo) {
-            this.updateInfo = updateInfo;
-        }
+        public RomUpdateThumbnailCustomSource() { }
 
         @Override public Bitmap getBitmap() {
             return DrawableHelper.drawableToBitmap(R.drawable.ic_launcher);
@@ -197,15 +193,10 @@ public class RomUpdateCard extends Card {
         @Override public String getTag() { return updateInfo.getTimestamp(); }
     }
 
-    private static class RomUpdateCardExpand extends CardExpand {
-        private final RomUpdateCard updateCard;
-        private final UpdateInfo    updateInfo;
+    private class RomUpdateCardExpand extends CardExpand {
 
-        public RomUpdateCardExpand(final Context context, final UpdateInfo info,
-                final RomUpdateCard card) {
+        public RomUpdateCardExpand(final Context context) {
             super(context, R.layout.card_rom_update_expand_inner_content);
-            this.updateCard = card;
-            this.updateInfo = info;
         }
 
         @Override
@@ -228,10 +219,10 @@ public class RomUpdateCard extends Card {
                 right.setVisibility(View.VISIBLE);
                 right.setText(android.R.string.cancel);
 
-                if (updateCard.getDownloadProgress() != null) {
-                    updateCard.getDownloadProgress().setVisibility(View.VISIBLE);
+                if (getDownloadProgress() != null) {
+                    getDownloadProgress().setVisibility(View.VISIBLE);
                 }
-                updateCard.setState(AppInstance.getStr(R.string.downloading));
+                setState(AppInstance.getStr(R.string.downloading));
             } else if (updateInfo.isDownloaded()) {
                 top_left.setVisibility(View.INVISIBLE);
                 top_right.setVisibility(View.VISIBLE);
@@ -243,13 +234,13 @@ public class RomUpdateCard extends Card {
                 right.setVisibility(View.VISIBLE);
                 right.setText(R.string.install);
 
-                if (updateCard.getDownloadProgress() != null) {
-                    updateCard.getDownloadProgress().setVisibility(View.INVISIBLE);
+                if (getDownloadProgress() != null) {
+                    getDownloadProgress().setVisibility(View.INVISIBLE);
                 }
                 if (Helper.parseDate(updateInfo.getTimestamp()) == Helper.getBuildDate()) {
-                    updateCard.setState(AppInstance.getStr(R.string.installed));
+                    setState(AppInstance.getStr(R.string.installed));
                 } else {
-                    updateCard.setState(AppInstance.getStr(R.string.downloaded));
+                    setState(AppInstance.getStr(R.string.downloaded));
                 }
             } else {
                 topContainer.setVisibility(View.GONE);
@@ -259,13 +250,13 @@ public class RomUpdateCard extends Card {
                 right.setVisibility(View.VISIBLE);
                 right.setText(R.string.download);
 
-                if (updateCard.getDownloadProgress() != null) {
-                    updateCard.getDownloadProgress().setVisibility(View.INVISIBLE);
+                if (getDownloadProgress() != null) {
+                    getDownloadProgress().setVisibility(View.INVISIBLE);
                 }
                 if (Helper.parseDate(updateInfo.getTimestamp()) == Helper.getBuildDate()) {
-                    updateCard.setState(AppInstance.getStr(R.string.installed));
+                    setState(AppInstance.getStr(R.string.installed));
                 } else {
-                    updateCard.setState("");
+                    setState("");
                 }
             }
 
@@ -288,11 +279,11 @@ public class RomUpdateCard extends Card {
             right.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     if (updateInfo.isDownloading()) {
-                        DownloadService.cancelDownload(updateInfo.getTimestamp());
+                        UpdateHelper.cancelDownload(mContext, updateInfo);
                     } else if (updateInfo.isDownloaded()) {
                         new InstallTask(getContext(), updateInfo).execute();
                     } else {
-                        DownloadService.start(updateInfo);
+                        updateInfo = UpdateHelper.downloadUpdate(mContext, updateInfo);
                     }
                 }
             });
@@ -358,11 +349,11 @@ public class RomUpdateCard extends Card {
                         new DialogInterface.OnClickListener() {
                             @Override public void onClick(DialogInterface dialogInterface, int i) {
                                 final Intent installIntent = new Intent(
-                                        AppInstance.applicationContext, UpdateCheckReceiver.class);
+                                        AppInstance.get(), UpdateCheckReceiver.class);
                                 installIntent.setAction(UpdateCheckReceiver.ACTION_INSTALL_UPDATE);
                                 installIntent.putExtra(UpdateCheckReceiver.EXTRA_FILE,
                                         updateInfo.getZipName());
-                                AppInstance.applicationContext.sendBroadcast(installIntent);
+                                AppInstance.get().sendBroadcast(installIntent);
                                 dialogInterface.dismiss();
                             }
                         }
