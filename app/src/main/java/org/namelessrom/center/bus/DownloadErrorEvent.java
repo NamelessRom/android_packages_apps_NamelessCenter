@@ -1,4 +1,4 @@
-package org.namelessrom.center.events;
+package org.namelessrom.center.bus;
 
 /**
  * An event which tells the user, that he / she / it cannot download because of various reasons

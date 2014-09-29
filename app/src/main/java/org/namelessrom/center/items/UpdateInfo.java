@@ -51,6 +51,7 @@ public class UpdateInfo implements Parcelable, Serializable {
     @SerializedName("downloadurl") private   String  mUrl           = "-";
     @SerializedName("timestamp") private     String  mTimestamp     = "-";
     @SerializedName("isDownloading") private boolean mIsDownloading = false;
+    @SerializedName("downloadId") private    long    mDownloadId    = -1;
 
     public UpdateInfo() { }
 
@@ -167,7 +168,7 @@ public class UpdateInfo implements Parcelable, Serializable {
 
     @Override public String toString() { return "UpdateInfo: " + mName; }
 
-    @Override public boolean equals(Object o) {
+    @Override public boolean equals(final Object o) {
         if (o == this) return true;
         if (!(o instanceof UpdateInfo)) return false;
 
@@ -179,7 +180,8 @@ public class UpdateInfo implements Parcelable, Serializable {
                 && TextUtils.equals(mUrl, ui.mUrl)
                 && TextUtils.equals(mTimestamp, ui.mTimestamp)
                 && mChannelType == ui.mChannelType
-                && mIsDownloading == ui.isDownloading();
+                && mIsDownloading == ui.isDownloading()
+                && mDownloadId == ui.mDownloadId;
     }
 
     public static final Creator<UpdateInfo> CREATOR = new Creator<UpdateInfo>() {
@@ -199,6 +201,7 @@ public class UpdateInfo implements Parcelable, Serializable {
         parcel.writeString(mUrl);
         parcel.writeString(mTimestamp);
         parcel.writeString(mIsDownloading ? "1" : "0");
+        parcel.writeLong(mDownloadId);
     }
 
     private void readFromParcel(final Parcel in) {
@@ -210,6 +213,15 @@ public class UpdateInfo implements Parcelable, Serializable {
         mUrl = in.readString();
         mTimestamp = in.readString();
         mIsDownloading = in.readString().equals("1");
+        mDownloadId = in.readLong();
     }
 
+    public UpdateInfo setDownloadId(final long id) {
+        this.mDownloadId = id;
+        return this;
+    }
+
+    public long getDownloadId() {
+        return this.mDownloadId;
+    }
 }

@@ -22,7 +22,7 @@
     android:versionName="1.0.1">
 
     <uses-sdk
-        android:minSdkVersion="17"
+        android:minSdkVersion="19"
         android:targetSdkVersion="19" />
 
     <!-- External Storage -->
@@ -90,7 +90,6 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".services.DownloadService" />
         <service android:name=".services.UpdateCheckService" />
         <service
             android:name=".services.dashclock.RomUpdateDashclockExtension"

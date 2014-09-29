@@ -54,20 +54,20 @@ public class Helper {
 
     public static boolean isOnline() {
         final ConnectivityManager cm = (ConnectivityManager)
-                AppInstance.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                AppInstance.get().getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
     }
 
     public static boolean isMetered() {
         final ConnectivityManager cm = (ConnectivityManager)
-                AppInstance.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                AppInstance.get().getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.isActiveNetworkMetered();
     }
 
     public static boolean isRoaming() {
         final ConnectivityManager cm = (ConnectivityManager)
-                AppInstance.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                AppInstance.get().getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isRoaming();
     }
@@ -133,13 +133,13 @@ public class Helper {
                 PreferenceHelper.getString(Constants.LAST_UPDATE_CHECK_PREF, "0"));
 
         // Get the intent ready
-        final Intent i = new Intent(AppInstance.applicationContext, UpdateCheckService.class);
+        final Intent i = new Intent(AppInstance.get(), UpdateCheckService.class);
         i.setAction(UpdateCheckService.ACTION_CHECK);
-        final PendingIntent pi = PendingIntent.getService(AppInstance.applicationContext, 0, i,
+        final PendingIntent pi = PendingIntent.getService(AppInstance.get(), 0, i,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Clear any old alarms and schedule the new alarm
-        final AlarmManager am = (AlarmManager) AppInstance.applicationContext
+        final AlarmManager am = (AlarmManager) AppInstance.get()
                 .getSystemService(Context.ALARM_SERVICE);
         am.cancel(pi);
 
@@ -150,7 +150,7 @@ public class Helper {
 
     public static void cancelNotification(final int notificationId) {
         if (notificationId == -1000) return;
-        final NotificationManager nm = (NotificationManager) AppInstance.applicationContext
+        final NotificationManager nm = (NotificationManager) AppInstance.get()
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         nm.cancel(notificationId);
     }
@@ -158,7 +158,7 @@ public class Helper {
     public static void collapseStatusbar() {
         if (isNameless()) {
             final StatusBarManager sb = (StatusBarManager)
-                    AppInstance.applicationContext.getSystemService(Context.STATUS_BAR_SERVICE);
+                    AppInstance.get().getSystemService(Context.STATUS_BAR_SERVICE);
             sb.collapsePanels();
         }
     }

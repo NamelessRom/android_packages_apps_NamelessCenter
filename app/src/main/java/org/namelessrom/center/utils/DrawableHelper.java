@@ -34,7 +34,7 @@ import org.namelessrom.center.AppInstance;
 public class DrawableHelper {
 
     public static Bitmap drawableToBitmap(final int resId) {
-        return drawableToBitmap(AppInstance.applicationContext.getResources().getDrawable(resId));
+        return drawableToBitmap(AppInstance.get().getResources().getDrawable(resId));
     }
 
     public static Bitmap drawableToBitmap(final Drawable drawable) {
@@ -54,7 +54,7 @@ public class DrawableHelper {
 
     public static Drawable getSvgDrawable(final int rawId) {
         final Drawable drawable = new SVGBuilder()
-                .readFromResource(AppInstance.applicationContext.getResources(), rawId)
+                .readFromResource(AppInstance.get().getResources(), rawId)
                 .build()
                 .getDrawable();
         drawable.setDither(true);
