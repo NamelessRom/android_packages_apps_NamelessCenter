@@ -31,7 +31,6 @@ import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
 import org.namelessrom.center.database.DatabaseHandler;
 import org.namelessrom.center.items.UpdateInfo;
-import org.namelessrom.center.services.DownloadService;
 import org.namelessrom.center.services.UpdateCheckService;
 import org.namelessrom.center.utils.Helper;
 import org.namelessrom.center.utils.PreferenceHelper;
@@ -60,14 +59,14 @@ public class UpdateCheckReceiver extends BroadcastReceiver {
             try {
                 UpdateHelper.triggerUpdate(fileName);
             } catch (IOException e) {
-                Logger.e(this, "Unable to reboot into recovery mode: " + e.getMessage());
+                Logger.e(this, "Unable to reboot into recovery mode", e.getMessage());
                 Toast.makeText(context, R.string.unable_to_reboot_toast, Toast.LENGTH_SHORT).show();
                 Helper.cancelNotification(intent.getIntExtra(EXTRA_ID, -1000));
             }
             return;
         } else if (TextUtils.equals(action, ACTION_DOWNLOAD_UPDATE)) {
             final UpdateInfo updateInfo = intent.getParcelableExtra(EXTRA_UPDATE_INFO);
-            DownloadService.start(updateInfo);
+            UpdateHelper.downloadUpdate(context, updateInfo);
             return;
         }
 

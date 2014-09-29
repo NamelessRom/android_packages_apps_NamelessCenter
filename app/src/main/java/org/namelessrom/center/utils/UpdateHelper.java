@@ -20,8 +20,11 @@
 package org.namelessrom.center.utils;
 
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.FileUtils;
 import android.os.PowerManager;
@@ -32,7 +35,9 @@ import android.os.storage.StorageVolume;
 
 import org.namelessrom.center.AppInstance;
 import org.namelessrom.center.Constants;
+import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
+import org.namelessrom.center.database.UpdateTable;
 import org.namelessrom.center.events.DownloadErrorEvent;
 import org.namelessrom.center.events.DownloadProgressEvent;
 import org.namelessrom.center.items.UpdateInfo;
@@ -114,12 +119,12 @@ public class UpdateHelper {
     }
 
     private static String getStorageMountpoint() {
-        final StorageManager sm = (StorageManager) AppInstance.applicationContext
+        final StorageManager sm = (StorageManager) AppInstance.get()
                 .getSystemService(Context.STORAGE_SERVICE);
         final StorageVolume[] volumes = sm.getVolumeList();
         final String primaryStoragePath =
                 Environment.getExternalStorageDirectory().getAbsolutePath();
-        final boolean alternateIsInternal = AppInstance.applicationContext
+        final boolean alternateIsInternal = AppInstance.get()
                 .getResources().getBoolean(R.bool.alternateIsInternal);
 
         if (volumes.length <= 1) {
@@ -242,8 +247,8 @@ public class UpdateHelper {
         }
 
         // Trigger the reboot
-        final PowerManager powerManager = (PowerManager)
-                AppInstance.applicationContext.getSystemService(Context.POWER_SERVICE);
+        final PowerManager powerManager = (PowerManager) AppInstance.get()
+                .getSystemService(Context.POWER_SERVICE);
         powerManager.reboot("recovery");
     }
 
@@ -260,4 +265,83 @@ public class UpdateHelper {
         return getUpdateFile(filename).exists();
     }
 
+    public static UpdateInfo downloadUpdate(final Context context, final UpdateInfo info) {
+        // build our request
+        final DownloadManager.Request req = new DownloadManager.Request(Uri.parse(info.getUrl()));
+
+        req.setTitle(info.getName());
+        req.setDescription(info.getUrl());
+        req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        // TODO: change to false
+        req.setVisibleInDownloadsUi(true);
+
+        final boolean metered = PreferenceHelper.getBoolean(Constants.PREF_UPDATE_METERED, true);
+        req.setAllowedOverMetered(metered);
+
+        final boolean roaming = PreferenceHelper.getBoolean(Constants.PREF_UPDATE_ROAMING, false);
+        req.setAllowedOverRoaming(roaming);
+
+        final Uri uri = Uri.fromFile(UpdateHelper.getUpdateFile(info.getZipName()));
+        req.setDestinationUri(uri);
+
+        final DownloadManager dm = (DownloadManager)
+                context.getSystemService(Context.DOWNLOAD_SERVICE);
+
+        final long id = dm.enqueue(req);
+
+        // TODO: id saving etc
+        Logger.i(UpdateHelper.class, "enqueued: %s", id);
+
+        info.setDownloadId(id);
+        UpdateTable.insertOrUpdate(info.getName(), info);
+
+        return info;
+    }
+
+    public static void cancelDownload(final Context context, final UpdateInfo info) {
+        final long id = UpdateTable.getValueByName(info.getName()).getDownloadId();
+
+        if (id == -1) return;
+
+        final DownloadManager dm = (DownloadManager)
+                context.getSystemService(Context.DOWNLOAD_SERVICE);
+
+        dm.remove(id);
+        UpdateTable.deleteItemByName(info.getName());
+    }
+
+    public static int getDownloadProgress(final long downloadId) {
+        final DownloadManager.Query query = new DownloadManager.Query();
+        query.setFilterById(downloadId);
+        final DownloadManager dm = (DownloadManager) AppInstance.get()
+                .getSystemService(Context.DOWNLOAD_SERVICE);
+        final Cursor c = dm.query(query);
+
+        if (c == null) {
+            return -1;
+        }
+        if (!c.moveToFirst()) {
+            c.close();
+            return -1;
+        }
+
+        if (c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                == DownloadManager.STATUS_SUCCESSFUL) {
+            c.close();
+            return 100;
+        }
+
+        final int downloaded = c.getInt(c.getColumnIndex(
+                DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+        final int total = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+
+        if (total == 0) {
+            c.close();
+            return -1;
+        }
+
+        final int progress = (int) ((double) downloaded / (double) total * 100f);
+        c.close();
+        return progress;
+    }
 }

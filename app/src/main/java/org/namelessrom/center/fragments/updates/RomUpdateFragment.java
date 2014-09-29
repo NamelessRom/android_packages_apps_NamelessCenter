@@ -49,9 +49,9 @@ import org.namelessrom.center.Logger;
 import org.namelessrom.center.R;
 import org.namelessrom.center.cards.RomUpdateCard;
 import org.namelessrom.center.cards.SimpleCard;
+import org.namelessrom.center.database.UpdateTable;
 import org.namelessrom.center.events.ChangelogEvent;
 import org.namelessrom.center.events.DownloadErrorEvent;
-import org.namelessrom.center.events.DownloadProgressEvent;
 import org.namelessrom.center.interfaces.OnBackPressedListener;
 import org.namelessrom.center.interfaces.OnFragmentLoadedListener;
 import org.namelessrom.center.items.UpdateInfo;
@@ -64,8 +64,6 @@ import org.namelessrom.center.utils.UpdateHelper;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
@@ -185,9 +183,9 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
             @Override public void onAnimationEnd(final Animator animation) {
                 mCardListView.setLayerType(View.LAYER_TYPE_NONE, null);
                 final Intent i = new Intent(
-                        AppInstance.applicationContext, UpdateCheckService.class);
+                        AppInstance.get(), UpdateCheckService.class);
                 i.setAction(UpdateCheckService.ACTION_CHECK_UI);
-                AppInstance.applicationContext.startService(i);
+                AppInstance.get().startService(i);
             }
 
             @Override public void onAnimationCancel(final Animator animation) { }
@@ -354,18 +352,6 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
         }
     }
 
-    @Subscribe public void onDownloadProgressEvent(final DownloadProgressEvent event) {
-        if (event == null) return;
-
-        // just update if we get a dummy, do not add it to the hashmap
-        if (!TextUtils.equals(event.getId(), "-1")) {
-            mCardArrayAdapter.getDownloading().remove(event.getId());
-            mCardArrayAdapter.getDownloading().put(event.getId(), event.getPercentage());
-        }
-
-        mCardArrayAdapter.notifyDataSetChanged();
-    }
-
     @Subscribe public void onDownloadErrorEvent(final DownloadErrorEvent event) {
         if (event == null) return;
 
@@ -379,23 +365,26 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
     }
 
     private class RomUpdateCardArrayAdapter extends CardArrayAdapter {
-        private final HashMap<String, Integer> mDownloading = new HashMap<String, Integer>();
+        private final ArrayList<UpdateInfo> downloading = new ArrayList<UpdateInfo>();
 
         public RomUpdateCardArrayAdapter(final Context context, final ArrayList<Card> cards) {
             super(context, cards);
+            downloading.clear();
             // TODO: load cards with already downloaded updates (hint: database + file check)
+            downloading.addAll(UpdateTable.getAll());
         }
 
         @Override public boolean hasStableIds() { return true; }
 
         @Override public View getView(int position, View convertView, ViewGroup parent) {
-            if (mDownloading.size() > 0 && getItem(position) instanceof RomUpdateCard) {
+            if (getItem(position) instanceof RomUpdateCard) {
                 final RomUpdateCard card = (RomUpdateCard) getItem(position);
-                for (final Map.Entry<String, Integer> entry : mDownloading.entrySet()) {
-                    if (TextUtils.equals(entry.getKey(), card.getId())) {
-                        card.setDownloading(entry.getValue() != 101);
+                for (final UpdateInfo updateInfo : downloading) {
+                    if (TextUtils.equals(updateInfo.getTimestamp(), card.updateInfo.getTimestamp())) {
+                        card.setDownloading(updateInfo.isDownloading());
                         if (card.getDownloadProgress() != null) {
-                            card.getDownloadProgress().setProgress(entry.getValue());
+                            card.getDownloadProgress().setProgress(
+                                    UpdateHelper.getDownloadProgress(updateInfo.getDownloadId()));
                         }
                     }
                 }
@@ -403,8 +392,6 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
 
             return super.getView(position, convertView, parent);
         }
-
-        public HashMap<String, Integer> getDownloading() { return mDownloading; }
     }
 
     private void loadChangelog(final UpdateInfo updateInfo) {

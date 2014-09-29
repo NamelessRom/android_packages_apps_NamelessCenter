@@ -45,7 +45,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public static synchronized DatabaseHandler getInstance() {
         if (sDatabaseHandler == null) {
-            sDatabaseHandler = new DatabaseHandler(AppInstance.applicationContext);
+            sDatabaseHandler = new DatabaseHandler(AppInstance.get());
         }
         return sDatabaseHandler;
     }

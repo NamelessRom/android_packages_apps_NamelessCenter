@@ -23,6 +23,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 
 import org.namelessrom.center.AppInstance;
 
@@ -80,8 +81,7 @@ public class AnimationHelper {
                 ObjectAnimator.ofFloat(target, "scaleX", targetScaleX),
                 ObjectAnimator.ofFloat(target, "scaleY", targetScaleY)
         );
-        scaleDown.setInterpolator(AnimationUtils.loadInterpolator(AppInstance.applicationContext,
-                android.R.anim.decelerate_interpolator));
+        scaleDown.setInterpolator(new DecelerateInterpolator());
         scaleDown.setDuration(DEFAULT_DURATION);
         return scaleDown;
     }

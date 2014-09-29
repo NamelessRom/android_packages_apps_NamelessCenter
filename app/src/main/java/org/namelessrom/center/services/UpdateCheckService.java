@@ -62,11 +62,9 @@ public class UpdateCheckService extends Service {
 
     private String mAction;
 
-    @Override
-    public IBinder onBind(final Intent intent) { return null; }
+    @Override public IBinder onBind(final Intent intent) { return null; }
 
-    @Override
-    public int onStartCommand(final Intent intent, final int flags, final int startId) {
+    @Override public int onStartCommand(final Intent intent, final int flags, final int startId) {
         if (intent == null) return START_NOT_STICKY;
         mAction = intent.getAction();
 
@@ -111,9 +109,8 @@ public class UpdateCheckService extends Service {
         return url;
     }
 
-    final FutureCallback<UpdateInfo[]> mCallBack = new FutureCallback<UpdateInfo[]>() {
-        @Override
-        public void onCompleted(Exception e, UpdateInfo[] result) {
+    private final FutureCallback<UpdateInfo[]> mCallBack = new FutureCallback<UpdateInfo[]>() {
+        @Override public void onCompleted(Exception e, UpdateInfo[] result) {
             if (result == null || e != null) {
                 // post back null, the receiver can handle null
                 postBus(null);
@@ -162,7 +159,7 @@ public class UpdateCheckService extends Service {
             if (realUpdateCount != 0) {
                 // There are updates available
                 // The notification should launch the main app
-                Intent i = new Intent(AppInstance.applicationContext, MainActivity.class);
+                Intent i = new Intent(AppInstance.get(), MainActivity.class);
                 i.setAction(MainActivity.ACTION_UPDATES);
                 final PendingIntent contentIntent = PendingIntent.getActivity(
                         UpdateCheckService.this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
