@@ -20,8 +20,10 @@
 package org.namelessrom.center.utils;
 
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.FileUtils;
 import android.os.PowerManager;
@@ -258,6 +260,17 @@ public class UpdateHelper {
 
     public static boolean isUpdateDownloaded(final String filename) {
         return getUpdateFile(filename).exists();
+    }
+
+    public static long downloadUpdate(final Context context, final UpdateInfo info) {
+        // build our request
+        final DownloadManager.Request req = new DownloadManager.Request(Uri.parse(info.getUrl()));
+
+        req.setTitle(info.getName());
+        req.setDescription(info.getUrl());
+        req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        req.setVisibleInDownloadsUi(false);
+        req.setAllowedOverMetered(PreferenceHelper)
     }
 
 }

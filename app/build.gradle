@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.namelessrom.center"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 319
 
         //ndk {
@@ -59,8 +59,8 @@ android {
 dependencies {
     compile fileTree(dir: '../libs' , include: '*.jar')
     compile project(':cardslib:library')
-    compile 'com.android.support:support-v13:20.+'
-    compile 'com.google.android.apps.dashclock:dashclock-api:+'
-    compile 'com.jakewharton:butterknife:5.+'
-    compile 'com.koushikdutta.ion:ion:1.+'
+    compile 'com.android.support:support-v13:20.0.0'
+    compile 'com.google.android.apps.dashclock:dashclock-api:2.0.0'
+    compile 'com.jakewharton:butterknife:5.1.2'
+    compile 'com.koushikdutta.ion:ion:1.3.8'
 }
