@@ -38,7 +38,7 @@ public class AppHelper {
     public static boolean actionExists(final String actionName) {
         final Intent i = new Intent();
         i.setAction(actionName);
-        return AppInstance.applicationContext.getPackageManager()
+        return AppInstance.get().getPackageManager()
                 .queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
     }
 

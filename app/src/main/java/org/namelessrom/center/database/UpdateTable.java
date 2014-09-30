@@ -8,6 +8,8 @@ import com.google.gson.Gson;
 import org.namelessrom.center.Logger;
 import org.namelessrom.center.items.UpdateInfo;
 
+import java.util.ArrayList;
+
 /**
  * Represents a database table for common entries like preferences
  */
@@ -18,6 +20,31 @@ public class UpdateTable extends BaseTable {
     public static String createTable() {
         return String.format("CREATE TABLE %s(%s INTEGER PRIMARY KEY,%s TEXT,%s TEXT);",
                 TABLE, KEY_ID, KEY_NAME, KEY_VALUE);
+    }
+
+    public static synchronized ArrayList<UpdateInfo> getAll() {
+        final ArrayList<UpdateInfo> updateInfos = new ArrayList<UpdateInfo>();
+
+        if (DatabaseHandler.getDatabase() == null) {
+            return updateInfos;
+        }
+
+        final Cursor cursor = DatabaseHandler.getDatabase().query(TABLE, new String[]{KEY_VALUE},
+                KEY_NAME + "=?", new String[]{name}, null, null, null, null);
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
+
+        if (cursor == null) {
+            return updateInfos;
+        }
+
+        if (!cursor.moveToFirst()) {
+            return updateInfos;
+        }
+
+        return updateInfos;
     }
 
     public static synchronized UpdateInfo getValueByName(final String name) {

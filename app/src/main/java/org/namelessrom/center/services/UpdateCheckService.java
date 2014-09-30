@@ -159,7 +159,7 @@ public class UpdateCheckService extends Service {
             if (realUpdateCount != 0) {
                 // There are updates available
                 // The notification should launch the main app
-                Intent i = new Intent(AppInstance.applicationContext, MainActivity.class);
+                Intent i = new Intent(AppInstance.get(), MainActivity.class);
                 i.setAction(MainActivity.ACTION_UPDATES);
                 final PendingIntent contentIntent = PendingIntent.getActivity(
                         UpdateCheckService.this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);

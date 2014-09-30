@@ -20,7 +20,6 @@
 package org.namelessrom.center;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,17 +37,17 @@ import java.io.File;
  */
 public class AppInstance extends Application {
 
-    public static Context applicationContext;
+    public static AppInstance sInstance;
 
     private static final Handler handler = new Handler(Looper.getMainLooper());
 
-    @Override
-    public void onCreate() {
+    public static AppInstance get() { return sInstance; }
+
+    @Override public void onCreate() {
         super.onCreate();
 
-        applicationContext = getApplicationContext();
-        Ion.getDefault(AppInstance.applicationContext)
-                .configure().getResponseCache().setCaching(false);
+        sInstance = this;
+        Ion.getDefault(AppInstance.sInstance).configure().getResponseCache().setCaching(false);
 
         DebugHelper.setEnabled(Helper.isNamelessDebug());
         Logger.setEnabled(PreferenceHelper.getBoolean(PreferenceHelper.DEBUG, false));
@@ -57,37 +56,36 @@ public class AppInstance extends Application {
     }
 
     public static PackageManager getPm() {
-        return AppInstance.applicationContext.getPackageManager();
+        return sInstance.getPackageManager();
     }
 
     public static String getVersionName() {
         String version;
         try {
-            version = getPm().getPackageInfo(
-                    AppInstance.applicationContext.getPackageName(), 0).versionName;
+            version = getPm().getPackageInfo(sInstance.getPackageName(), 0).versionName;
         } catch (Exception exception) {
             version = "---";
         }
         return version;
     }
 
-    public static File getFiles() { return AppInstance.applicationContext.getFilesDir(); }
+    public static File getFiles() { return sInstance.getFilesDir(); }
 
     public static String getFilesDirectory() {
         final File tmp = getFiles();
         if (tmp != null && tmp.exists()) {
             return tmp.getPath();
         } else {
-            return "/data/data/" + AppInstance.applicationContext.getPackageName();
+            return "/data/data/" + sInstance.getPackageName();
         }
     }
 
     public static String getStr(final int resId) {
-        return AppInstance.applicationContext.getString(resId);
+        return sInstance.getString(resId);
     }
 
     public static String getStr(final int resId, final Object... objects) {
-        return AppInstance.applicationContext.getString(resId, objects);
+        return sInstance.getString(resId, objects);
     }
 
     public static Handler getHandler() { return handler; }
