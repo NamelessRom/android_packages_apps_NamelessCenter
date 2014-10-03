@@ -19,7 +19,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_STATIC_JAVA_LIBRARIES := android-support-v13-r20 butterknife dashclockapi ion otto
+LOCAL_STATIC_JAVA_LIBRARIES := android-support-v13 gson volley
 
 LOCAL_SRC_FILES    := $(call all-java-files-under, java)
 
@@ -31,26 +31,6 @@ LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 LOCAL_PACKAGE_NAME := NamelessCenter
 LOCAL_CERTIFICATE := platform
 LOCAL_PRIVILEGED_MODULE := true
-
-#LOCAL_SDK_VERSION := 19
-
-LOCAL_JNI_SHARED_LIBRARIES := libopendelta
-LOCAL_REQUIRED_MODULES     := libopendelta
-
-######
-
-library_src_files := ../../../../../../external/cardslib/library/src/main/java
-LOCAL_SRC_FILES   += $(call all-java-files-under, $(library_src_files))
-
-LOCAL_RESOURCE_DIR += $(LOCAL_PATH)/../../../../../../external/cardslib/library/src/main/res
-
-######
-
-LOCAL_AAPT_FLAGS := \
-    --auto-add-overlay \
-    --extra-packages it.gmariotti.cardslib.library \
-
-######
 
 include $(BUILD_PACKAGE)
 
