@@ -1,67 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (C) 2013 - 2014 Alexander "Evisceration" Martinz
-  ~
-  ~  This program is free software: you can redistribute it and/or modify
-  ~  it under the terms of the GNU General Public License as published by
-  ~  the Free Software Foundation, either version 3 of the License, or
-  ~  (at your option) any later version.
-  ~
-  ~  This program is distributed in the hope that it will be useful,
-  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~  GNU General Public License for more details.
-  ~
-  ~  You should have received a copy of the GNU General Public License
-  ~  along with this program.  If not, see <http://www.gnu.org/licenses
-  -->
+  Copyright 2014 ParanoidAndroid Project
+
+  This file is part of Paranoid OTA.
+
+  Paranoid OTA is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Paranoid OTA is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Paranoid OTA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <resources>
 
-    <!-- Preference Entries -->
-    <string-array name="update_check_entries" translatable="false">
-        <item>@string/check_manual</item>
-        <item>@string/check_on_app_start</item>
-        <item>@string/check_on_boot</item>
-        <item>@string/check_twice_daily</item>
-        <item>@string/check_daily</item>
-        <item>@string/check_weekly</item>
-        <item>@string/check_bi_weekly</item>
-        <item>@string/check_monthly</item>
+    <!-- CHECK UPDATES FREQUENCY -->
+    <string-array name="time_notifications_entries">
+        <item>@string/time_notifications_never</item>
+        <item>@string/time_notifications_half_an_hour</item>
+        <item>@string/time_notifications_an_hour</item>
+        <item>@string/time_notifications_two_hours</item>
+        <item>@string/time_notifications_five_hours</item>
+        <item>@string/time_notifications_daily</item>
     </string-array>
-
-    <string-array name="update_check_values" translatable="false">
+    <string-array name="time_notifications_values" translatable="false">
         <item>-1</item>
-        <item>-2</item>
-        <item>-3</item>
-        <item>43200</item>
-        <item>86400</item>
-        <item>604800</item>
-        <item>1209600</item>
-        <item>2419200</item>
+        <item>1800000</item>
+        <item>3600000</item>
+        <item>7200000</item>
+        <item>18000000</item>
+        <item>86400000</item>
     </string-array>
 
-    <string-array name="update_channel_entries" translatable="false">
-        <item>@string/all</item>
-        <item>@string/nightly</item>
-        <item>@string/weekly</item>
+    <!-- GAPPS TYPE -->
+    <string-array name="gapps_type_entries">
+        <item>@string/gapps_type_stock</item>
+        <item>@string/gapps_type_full</item>
+        <item>@string/gapps_type_mini</item>
+        <item>@string/gapps_type_micro</item>
     </string-array>
-
-    <string-array name="update_channel_values" translatable="false">
+    <string-array name="gapps_type_values" translatable="false">
+        <item>2</item>
         <item>0</item>
         <item>1</item>
-        <item>2</item>
+        <item>3</item>
     </string-array>
-
-    <string-array name="recovery_type_entries" translatable="false">
-        <item>@string/recovery_type_both</item>
-        <item>@string/recovery_type_cwm</item>
-        <item>@string/recovery_type_open</item>
-    </string-array>
-
-    <string-array name="recovery_type_values" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
 </resources>
