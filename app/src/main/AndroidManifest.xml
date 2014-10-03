@@ -18,7 +18,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.namelessrom.center"
     android:sharedUserId="org.namelessrom"
-    android:versionCode="2"
+    android:versionCode="3"
     android:versionName="1.0.1">
 
     <uses-sdk
@@ -41,6 +41,8 @@
     <uses-permission android:name="android.permission.ACCESS_CACHE_FILESYSTEM" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
     <uses-permission android:name="android.permission.REBOOT" />
+
+    <uses-feature android:name="org.namelessrom.android" android:required="true" />
 
     <application
         android:name=".AppInstance"
