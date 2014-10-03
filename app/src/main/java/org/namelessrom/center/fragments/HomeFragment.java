@@ -38,6 +38,7 @@ public class HomeFragment extends Fragment implements OnBackPressedListener {
         final View v = inflater.inflate(R.layout.fragment_main, container, false);
 
         webView = findById(v, R.id.webview);
+        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         progressBar = findById(v, R.id.webview_progress);
         progressBar.setVisibility(View.INVISIBLE);
 
