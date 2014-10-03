@@ -1,116 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-   *    Copyright (C) 2014 Alexander "Evisceration" Martinz
-   *
-   *    This program is free software: you can redistribute it and/or modify
-   *    it under the terms of the GNU General Public License as published by
-   *    the Free Software Foundation, either version 3 of the License, or
-   *    (at your option) any later version.
-   *
-   *    This program is distributed in the hope that it will be useful,
-   *    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   *    GNU General Public License for more details.
-   *
-   *    You should have received a copy of the GNU General Public License
-   *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
+  Copyright 2014 ParanoidAndroid Project
+
+  This file is part of Paranoid OTA.
+
+  Paranoid OTA is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Paranoid OTA is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with Paranoid OTA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.namelessrom.center"
-    android:sharedUserId="org.namelessrom"
-    android:versionCode="3"
-    android:versionName="1.0.1">
+    android:versionCode="21"
+    android:versionName="2.1">
 
     <uses-sdk
-        android:minSdkVersion="17"
+        android:minSdkVersion="19"
         android:targetSdkVersion="19" />
 
-    <!-- External Storage -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- Network -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Others -->
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!-- System -->
-    <uses-permission android:name="android.permission.ACCESS_CACHE_FILESYSTEM" />
-    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
     <uses-permission android:name="android.permission.REBOOT" />
-
-    <uses-feature android:name="org.namelessrom.android" android:required="true" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_CACHE_FILESYSTEM" />
 
     <application
-        android:name=".AppInstance"
         android:allowBackup="true"
-        android:configChanges="orientation|keyboardHidden|screenSize"
-        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name=".MainActivity"
+            android:name="org.namelessrom.center.MainActivity"
             android:label="@string/app_name"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:hardwareAccelerated="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <!-- TODO: add actions -->
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="org.namelessrom.center.activities.SettingsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.namelessrom.center.MainActivity" />
+        </activity>
+
+        <activity
+            android:name="org.namelessrom.center.activities.SystemActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- TODO: remove actions -->
                 <action android:name="org.namelessrom.center.MainActivity" />
                 <action android:name="org.namelessrom.center.activities.MainActivity" />
                 <action android:name="org.namelessrom.center.UPDATES" />
+                <!-- backwards compatibility -->
                 <action android:name="org.namelessrom.updatecenter.MainActivity" />
                 <action android:name="org.namelessrom.updatecenter.activities.MainActivity" />
                 <action android:name="org.namelessrom.updatecenter.UPDATES" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/preferences"
-            android:configChanges="orientation|keyboardHidden|screenSize">
-        </activity>
+            android:name="org.namelessrom.center.activities.RequestFileActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <receiver android:name=".receivers.UpdateCheckReceiver">
+        <receiver android:name="org.namelessrom.center.NotificationAlarm" />
+
+        <receiver
+            android:name="org.namelessrom.center.BootReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".receivers.DashclockUpdateReceiver">
-            <intent-filter>
-                <action android:name="org.namelessrom.center.action.DASHCLOCK_ROM_UPDATE" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
 
-        <service android:name=".services.DownloadService" />
-        <service android:name=".services.UpdateCheckService" />
-        <service
-            android:name=".services.dashclock.RomUpdateDashclockExtension"
-            android:icon="@drawable/ic_launcher"
-            android:label="@string/extension_label"
-            android:permission="com.google.android.apps.dashclock.permission.READ_EXTENSION_DATA">
+        <receiver android:name="org.namelessrom.center.DownloadReceiver">
             <intent-filter>
-                <action android:name="com.google.android.apps.dashclock.Extension" />
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
             </intent-filter>
+        </receiver>
 
-            <meta-data
-                android:name="protocolVersion"
-                android:value="2" />
-            <meta-data
-                android:name="worldReadable"
-                android:value="true" />
-            <meta-data
-                android:name="description"
-                android:value="@string/extension_description" />
-        </service>
     </application>
 
 </manifest>
