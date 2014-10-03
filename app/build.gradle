@@ -6,19 +6,8 @@ android {
 
     defaultConfig {
         applicationId "org.namelessrom.center"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 319
-
-        //ndk {
-        //    moduleName "libopendelta"
-        //}
-    }
-
-    sourceSets {
-        main {
-            // do not build jni in gradle as i dont need it for debugging :P
-            jni.srcDirs = ['donotbuildme']
-        }
     }
 
     signingConfigs {
@@ -48,6 +37,8 @@ android {
             signingConfig signingConfigs.release
             proguardFile 'src/main/proguard.flags'
             zipAlign false
+            applicationIdSuffix '.dev'
+            versionNameSuffix '-dev'
         }
     }
 
@@ -57,10 +48,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: '../libs' , include: '*.jar')
-    compile project(':cardslib:library')
+    compile files('../libs/volley.jar')
     compile 'com.android.support:support-v13:20.+'
-    compile 'com.google.android.apps.dashclock:dashclock-api:+'
-    compile 'com.jakewharton:butterknife:5.+'
-    compile 'com.koushikdutta.ion:ion:1.+'
 }

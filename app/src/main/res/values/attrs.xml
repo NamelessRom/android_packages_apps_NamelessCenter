@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-   *    Copyright (C) 2014 Alexander "Evisceration" Martinz
-   *
-   *    This program is free software: you can redistribute it and/or modify
-   *    it under the terms of the GNU General Public License as published by
-   *    the Free Software Foundation, either version 3 of the License, or
-   *    (at your option) any later version.
-   *
-   *    This program is distributed in the hope that it will be useful,
-   *    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   *    GNU General Public License for more details.
-   *
-   *    You should have received a copy of the GNU General Public License
-   *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
+  Copyright 2014 ParanoidAndroid Project
+
+  This file is part of Paranoid OTA.
+
+  Paranoid OTA is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Paranoid OTA is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Paranoid OTA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <resources>
-    <declare-styleable name="CircleImageView">
-        <!-- borders around the image-->
-        <attr name="border" format="boolean" />
-        <attr name="border_color" format="color" />
-        <attr name="border_width" format="dimension" />
-        <!-- Shadow -->
-        <attr name="shadow" format="boolean" />
+
+    <declare-styleable name="Card">
+        <attr name="title" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="CustomCircleImageViewTheme">
-        <attr name="circleImageViewStyle" format="reference" />
+    <declare-styleable name="Item">
+        <attr name="itemTitle" format="string" />
+        <attr name="itemIcon" format="integer" />
     </declare-styleable>
+
 </resources>
