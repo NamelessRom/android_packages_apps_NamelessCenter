@@ -1,1 +1,1 @@
-include ':app', ':cardslib:library'
+include ':app'
