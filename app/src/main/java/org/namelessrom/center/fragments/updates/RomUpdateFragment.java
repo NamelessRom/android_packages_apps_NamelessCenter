@@ -116,6 +116,7 @@ public class RomUpdateFragment extends Fragment implements Card.OnSwipeListener,
 
         mChangelogContainer = findById(v, R.id.rom_updates_changelog_container);
         mChangelog = findById(v, R.id.rom_updates_changelog);
+        mChangelog.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         // enable javascript for our sweet scripts
         mChangelog.getSettings().setJavaScriptEnabled(true);
 
