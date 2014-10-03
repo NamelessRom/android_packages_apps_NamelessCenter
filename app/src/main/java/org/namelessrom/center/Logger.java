@@ -30,30 +30,94 @@ public class Logger {
 
     public static synchronized void setEnabled(final boolean enable) { DEBUG = enable; }
 
-    public static synchronized boolean getEnabled() { return DEBUG; }
+    public static boolean getEnabled() { return DEBUG; }
 
     public static void d(final Object object, final String msg) {
-        if (DEBUG) Log.d(object.getClass().getSimpleName(), "--> " + msg);
+        if (DEBUG) { Log.d(getTag(object), getMessage(msg)); }
+    }
+
+    public static void d(final Object object, final String msg, final Object... objects) {
+        if (DEBUG) Log.d(getTag(object), getMessage(msg, objects));
+    }
+
+    public static void d(final Object object, final String msg, final Exception exception) {
+        if (DEBUG) Log.d(getTag(object), getMessage(msg), exception);
     }
 
     public static void e(final Object object, final String msg) {
-        if (DEBUG) Log.e(object.getClass().getSimpleName(), "--> " + msg);
+        if (DEBUG) Log.e(getTag(object), getMessage(msg));
+    }
+
+    public static void e(final Object object, final String msg, final Object... objects) {
+        if (DEBUG) Log.e(getTag(object), getMessage(msg, objects));
+    }
+
+    public static void e(final Object object, final String msg, final Exception exception) {
+        if (DEBUG) Log.e(getTag(object), getMessage(msg), exception);
     }
 
     public static void i(final Object object, final String msg) {
-        if (DEBUG) Log.i(object.getClass().getSimpleName(), "--> " + msg);
+        if (DEBUG) Log.i(getTag(object), getMessage(msg));
+    }
+
+    public static void i(final Object object, final String msg, final Object... objects) {
+        if (DEBUG) Log.i(getTag(object), getMessage(msg, objects));
+    }
+
+    public static void i(final Object object, final String msg, final Exception exception) {
+        if (DEBUG) Log.i(getTag(object), getMessage(msg), exception);
     }
 
     public static void v(final Object object, final String msg) {
-        if (DEBUG) Log.v(object.getClass().getSimpleName(), "--> " + msg);
+        if (DEBUG) Log.v(getTag(object), getMessage(msg));
+    }
+
+    public static void v(final Object object, final String msg, final Object... objects) {
+        if (DEBUG) Log.v(getTag(object), getMessage(msg, objects));
+    }
+
+    public static void v(final Object object, final String msg, final Exception exception) {
+        if (DEBUG) Log.v(getTag(object), getMessage(msg), exception);
     }
 
     public static void w(final Object object, final String msg) {
-        if (DEBUG) Log.w(object.getClass().getSimpleName(), "--> " + msg);
+        if (DEBUG) Log.w(getTag(object), getMessage(msg));
+    }
+
+    public static void w(final Object object, final String msg, final Object... objects) {
+        if (DEBUG) Log.w(getTag(object), getMessage(msg, objects));
+    }
+
+    public static void w(final Object object, final String msg, final Exception exception) {
+        if (DEBUG) Log.w(getTag(object), getMessage(msg), exception);
     }
 
     public static void wtf(final Object object, final String msg) {
-        if (DEBUG) Log.wtf(object.getClass().getSimpleName(), "--> " + msg);
+        if (DEBUG) Log.wtf(getTag(object), getMessage(msg));
+    }
+
+    public static void wtf(final Object object, final String msg, final Object... objects) {
+        if (DEBUG) Log.wtf(getTag(object), getMessage(msg, objects));
+    }
+
+    public static void wtf(final Object object, final String msg, final Exception exception) {
+        if (DEBUG) Log.wtf(getTag(object), getMessage(msg), exception);
+    }
+
+    public static String getTag(final Object object) {
+        if (object instanceof String) {
+            return ((String) object);
+        } else {
+            return object.getClass().getSimpleName();
+        }
+    }
+
+    public static String getMessage(final String msg) {
+        return String.format("--> %s", msg);
+    }
+
+    public static String getMessage(final String msg, final Object... objects) {
+        return String.format("--> %s", String.format(msg, objects));
     }
 
 }
