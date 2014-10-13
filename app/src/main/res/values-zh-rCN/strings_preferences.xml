@@ -17,6 +17,27 @@
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
+  <string name="debug_mode">启用调试模式</string>
+  <string name="debug_mode_summary">启用其他日志记录和详细信息，可用于调试</string>
+  <string name="rom_updates">系统更新</string>
+  <string name="rom_updates_summary">配置系统更新首选项</string>
+  <string name="general_summary">配置程序首选项</string>
+  <string name="update_check_title">更新检查频率</string>
+  <string name="check_manual">手动</string>
+  <string name="check_on_app_start">应用程序启动时</string>
+  <string name="check_on_boot">每次系统启动时</string>
+  <string name="check_twice_daily">每天两次</string>
+  <string name="check_daily">每天一次</string>
+  <string name="check_weekly">每周一次</string>
+  <string name="check_bi_weekly">两周一次</string>
+  <string name="check_monthly">每月一次</string>
+  <string name="update_metered_title">允许使用数据网络连接</string>
+  <string name="update_metered_summary">设置是否继续在移动数据网络连接下下载</string>
+  <string name="update_metered_skip_warn_title">跳过移动数据网络警告</string>
+  <string name="update_roaming_title">允许漫游</string>
+  <string name="update_roaming_summary">设置是否在漫游情况下下载</string>
+  <string name="all">所有</string>
+  <string name="channel_title">更新类型</string>
   <string name="recovery_type_title">Recovery脚本类型</string>
   <string name="recovery_type_both">两者</string>
 </resources>

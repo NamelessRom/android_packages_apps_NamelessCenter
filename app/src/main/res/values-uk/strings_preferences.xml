@@ -16,4 +16,28 @@
    *    You should have received a copy of the GNU General Public License
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<resources/>
+<resources>
+  <string name="debug_mode">Увімкнути режим налагодження</string>
+  <string name="debug_mode_summary">Вмикає додаткове ведення журналів та багато іншого корисне для режиму налагодження</string>
+  <string name="rom_updates">Оновлення прошивки</string>
+  <string name="rom_updates_summary">Настроїти параметри оновлення прошивки</string>
+  <string name="general_summary">Використовувати параметри по-замовчуванню</string>
+  <string name="update_check_title">Інтервал перевірки оновлень</string>
+  <string name="check_manual">Власноруч</string>
+  <string name="check_on_app_start">При старті додатку</string>
+  <string name="check_on_boot">При кожному завантаженні</string>
+  <string name="check_twice_daily">Двічі на день</string>
+  <string name="check_daily">Щоденно</string>
+  <string name="check_weekly">Щотижня</string>
+  <string name="check_bi_weekly">Раз на два тижні</string>
+  <string name="check_monthly">Щомісяця</string>
+  <string name="update_metered_title">Дозволити через лімітовані підключення</string>
+  <string name="update_metered_summary">Укажіть, чи можна завантажувати через лімітовані підключення</string>
+  <string name="update_metered_skip_warn_title">Ігнорувати попередження</string>
+  <string name="update_roaming_title">Дозволити роумінг</string>
+  <string name="update_roaming_summary">Укажіть, чи можна завантажувати в роумінгу</string>
+  <string name="all">Всі</string>
+  <string name="channel_title">Канал оновлень</string>
+  <string name="recovery_type_title">Тип скрипту Recovery</string>
+  <string name="recovery_type_both">Обидва</string>
+</resources>

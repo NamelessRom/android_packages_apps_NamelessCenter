@@ -16,4 +16,50 @@
    *    You should have received a copy of the GNU General Public License
    *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<resources xmlns:xliff="http://schemas.android.com/apk/res/android"/>
+<resources xmlns:xliff="http://schemas.android.com/apk/res/android">
+  <string name="home">Головна</string>
+  <string name="updates">Оновлення</string>
+  <string name="preferences">Налаштування</string>
+  <string name="build_version">Версія збірки</string>
+  <string name="version">Версія: %s</string>
+  <string name="extras">Додатково</string>
+  <string name="information">Інформація</string>
+  <string name="general">Загальні</string>
+  <string name="unknown">Невідомо</string>
+  <string name="action_press_again">Натисніть ще раз щоб вийти.</string>
+  <string name="refresh">Оновити</string>
+  <string name="install">Встановити</string>
+  <string name="changelog">Журнал змін</string>
+  <string name="download">Завантажити</string>
+  <string name="delete_update">Видалити оновлення</string>
+  <string name="delete_update_message">Ви дійсно бажаєте видалити %s?</string>
+  <string name="downloaded">Завантажено</string>
+  <string name="downloading">Завантаження</string>
+  <string name="installed">Встановлено</string>
+  <string name="checking_md5">Перевірка MD5 суми&#8230;</string>
+  <string name="downloading_update">Завантаження оновлення&#8230;</string>
+  <string name="download_in_progress">Завантаження триває&#8230;</string>
+  <string name="please_wait">Будь-ласка, зачекайте до завершення операції&#8230;</string>
+  <string name="error">Помилка!</string>
+  <string name="warning">Увага!</string>
+  <string name="md5sum_warning">MD5 сума \"%s\" не співпадає з завантаженим файлом!\n\nПереконайтесь, що файл не пошкоджений! Якщо ви будете продовжувати бачити цю помилку, ви можете спробувати прошити файл вручну, на свій страх і ризик!</string>
+  <string name="download_success">Оновлення успішно завантажено</string>
+  <string name="reboot_and_install">Перезавантажити і встановити</string>
+  <string name="download_install_notice">Оновлення <xliff:g id="filename">%s</xliff:g> успішно завантажено. Коли ви натисните \'Перезавантажити і встановити\', пристрій перезавантажиться для встановлення оновлення.\n\nЗверніть увагу: для автоматичного встановлення необхідне сумісне Recovery.</string>
+  <string name="download_failure">Не вдалося завантажити оновлення</string>
+  <string name="unable_to_download_file">Неможливо завантажити файл оновлення</string>
+  <string name="unable_to_reboot_toast">Неможливо перезавантажитись у режим recovery</string>
+  <string name="installed_version">Встановлена версія</string>
+  <string name="swipe_refresh">Змістіть, щоб оновити!</string>
+  <string name="size_used">Розмір, що використовується на sdcard</string>
+  <string name="update_check_failed">Не вдалося перевірити оновлення. Будь-ласка, перевірте підключення до Інтернету і повторіть спробу пізніше.</string>
+  <string name="new_updates_found_ticker">Доступні нові оновлення</string>
+  <string name="new_updates_found_title">Нові оновлення</string>
+  <string name="data_connection_required">Необхідне з\'єднання з Інтернетом.</string>
+  <string name="no_updates_available">Доступні оновлення відсутні</string>
+  <string name="error_unknown">Сталася невідома помилка, спробуйте ще раз!</string>
+  <string name="error_offline">Пристрій не має активних з\'єднань, відміна.</string>
+  <string name="error_metered">Використовується обмеження по трафіку, відміна.</string>
+  <string name="error_roaming">Пристрій використовує роумінгу, відміна.</string>
+  <string name="warning_metered">Пристрій використовує обмеження трафіку!</string>
+</resources>
